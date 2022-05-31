@@ -1,8 +1,16 @@
 import { Request, Response } from 'express';
+import { db } from '../db';
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    return res.status(200).json({ ok: true, msg: 'Obtener usuarios' });
+    const text = 'SELECT * FROM  users';
+    const { rows } = await db.query(text);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Obtener usuarios',
+      users: rows,
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'error', error });
