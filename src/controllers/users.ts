@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import bcryptjs from 'bcryptjs';
 import { db } from '../db';
 
 export const getUsers = async (req: Request, res: Response) => {
@@ -32,9 +33,12 @@ export const createUser = async (req: Request, res: Response) => {
   const { first_name, last_name, email, password } = req.body;
 
   try {
+    const salt = bcryptjs.genSaltSync(10);
+    const hash = bcryptjs.hashSync(password, salt);
+
     const text: string =
       'INSERT INTO users(first_name, last_name, email, password) VALUES($1,$2,$3,$4) RETURNING *';
-    const values: string[] = [first_name, last_name, email, password];
+    const values: string[] = [first_name, last_name, email, hash];
 
     const { rows } = await db.query(text, values);
 
