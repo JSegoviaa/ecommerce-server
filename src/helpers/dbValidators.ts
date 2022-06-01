@@ -15,3 +15,17 @@ export const emailIsAlreadyUsed = async (email: string) => {
 
   return;
 };
+
+export const userExist = async (id: string) => {
+  const text: string = `SELECT * FROM users WHERE id = '${id}' LIMIT 1`;
+
+  const userExist = await db.query(text);
+
+  if (userExist.rows.length === 0) {
+    throw new Error(`El usuario con el id ${id} no existe`);
+  }
+
+  if (userExist) return;
+
+  return;
+};
