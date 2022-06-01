@@ -29,8 +29,18 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
+  const { first_name, last_name, email, password } = req.body;
+
   try {
-    return res.status(200).json({ ok: true, msg: 'Crear usuarios' });
+    const text: string =
+      'INSERT INTO users(first_name, last_name, email, password) VALUES($1,$2,$3,$4) RETURNING *';
+    const values: string[] = [first_name, last_name, email, password];
+
+    const { rows } = await db.query(text, values);
+
+    return res
+      .status(201)
+      .json({ ok: true, msg: 'Registro exitoso', newUser: rows[0] });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });
