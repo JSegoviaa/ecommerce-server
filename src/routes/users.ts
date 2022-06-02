@@ -46,7 +46,23 @@ router.post(
   createUser
 );
 
-router.put('/:id', [], updateUser);
-router.delete('/:id', [], deleteUser);
+router.put(
+  '/:id',
+  [
+    check('id', 'No existe un usuario con ese id'),
+    check('id').custom(userExist),
+    validateFields,
+  ],
+  updateUser
+);
+router.delete(
+  '/:id',
+  [
+    check('id', 'No existe un usuario con ese id'),
+    check('id').custom(userExist),
+    validateFields,
+  ],
+  deleteUser
+);
 
 export default router;
