@@ -55,6 +55,7 @@ router.put(
   ],
   updateUser
 );
+
 router.delete(
   '/:id',
   [
