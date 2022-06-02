@@ -1,11 +1,12 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-import { categories, products, subcategories, users } from '../routes';
+import { categories, products, subcategories, users, auth } from '../routes';
 
 class Server {
   private app: Application;
   private port: string;
   private endpoints = {
+    auth: '/api/auth',
     categories: '/api/categories',
     products: '/api/products',
     subcategories: '/api/subcategories',
@@ -35,10 +36,11 @@ class Server {
   }
 
   routes() {
+    this.app.use(this.endpoints.auth, auth);
     this.app.use(this.endpoints.categories, categories);
+    this.app.use(this.endpoints.products, products);
     this.app.use(this.endpoints.subcategories, subcategories);
     this.app.use(this.endpoints.users, users);
-    this.app.use(this.endpoints.products, products);
   }
 
   listen() {
