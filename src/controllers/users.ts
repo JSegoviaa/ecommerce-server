@@ -32,7 +32,20 @@ export const getUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const text = `SELECT first_name, last_name, email, created_at, updated_at, is_active FROM users WHERE id = ${id} LIMIT 1`;
+    const text: string = `
+    SELECT 
+      first_name, 
+      last_name, 
+      email, 
+      created_at, 
+      updated_at, 
+      is_active, 
+      roles.role 
+    FROM 
+      users 
+    INNER JOIN roles ON users.role_id = roles.id 
+    WHERE users.id = ${id} LIMIT 1
+    `;
 
     const { rows } = await db.query(text);
 
@@ -46,7 +59,7 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { first_name, last_name, email, password } = req.body;
+  const { first_name, last_name, email, password, role_id } = req.body;
   const date = moment().format();
 
   try {
@@ -56,8 +69,16 @@ export const createUser = async (req: Request, res: Response) => {
 
     //Guardar usuario en la base de datos
     const text: string =
-      'INSERT INTO users(first_name, last_name, email, password, created_at, updated_at) VALUES($1,$2,$3,$4,$5,$6) RETURNING *';
-    const values: string[] = [first_name, last_name, email, hash, date, date];
+      'INSERT INTO users(first_name, last_name, email, password, created_at, updated_at, role_id) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *';
+    const values: string[] = [
+      first_name,
+      last_name,
+      email,
+      hash,
+      date,
+      date,
+      role_id,
+    ];
 
     const { rows } = await db.query(text, values);
 

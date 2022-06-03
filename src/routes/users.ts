@@ -8,7 +8,7 @@ import {
   getUsers,
   updateUser,
 } from '../controllers';
-import { emailIsAlreadyUsed, userExist } from '../helpers';
+import { emailIsAlreadyUsed, isValidRole, userExist } from '../helpers';
 
 const router = Router();
 
@@ -41,6 +41,11 @@ router.post(
       'La contraseña debe tener al menos 8 caracteres'
     ).isLength({ min: 8 }),
     check('email').custom(emailIsAlreadyUsed),
+    check('role_id', 'El rol ingresado no es un rol válido').isFloat({
+      min: 1,
+      max: 4,
+    }),
+    check('role_id').custom(isValidRole),
     validateFields,
   ],
   createUser

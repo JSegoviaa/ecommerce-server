@@ -29,3 +29,14 @@ export const userExist = async (id: string) => {
 
   return;
 };
+
+export const isValidRole = async (role: string) => {
+  const text: string = `SELECT * FROM roles WHERE id = '${role}'`;
+  const roleExist = await db.query(text);
+
+  if (roleExist.rows.length === 0) {
+    throw new Error(`El rol ${role} no es un rol válido`);
+  }
+
+  if (roleExist) return;
+};
