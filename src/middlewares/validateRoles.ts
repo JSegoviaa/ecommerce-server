@@ -35,15 +35,14 @@ export const adminRol = (req: any, res: Response, next: NextFunction) => {
   next();
 };
 
-export const hasRol = (...roles: number[]) => {
+export const hasRol = (...roles: string[]) => {
   return (req: any, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res
         .status(500)
         .json({ msg: 'Se quiere verificar el rol sin iniciar sesión' });
     }
-
-    if (!roles.includes(req.user.role_id)) {
+    if (!roles.includes(req.user.role)) {
       return res.status(401).json({
         msg: `Para realizar esta acción se requiere alguno de estos roles: ${roles}`,
       });

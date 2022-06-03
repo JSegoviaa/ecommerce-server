@@ -17,7 +17,17 @@ export const validateJWT = async (
 
   try {
     const { uid } = jwt.verify(token, process.env.JWT!) as any;
-    const text: string = `SELECT * FROM users WHERE id = '${uid}'`;
+    const text: string = `
+          SELECT 
+            users.id, 
+            users.is_active, 
+            roles.role 
+          FROM 
+            users 
+          INNER JOIN roles ON users.role_id = roles.id 
+          WHERE users.id = '${uid}'
+          `;
+
     const { rows } = await db.query(text);
     const user = rows[0];
 
@@ -34,7 +44,6 @@ export const validateJWT = async (
       });
     }
 
-    req.uid = uid;
     req.user = user;
 
     next();

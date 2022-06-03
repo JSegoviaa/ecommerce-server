@@ -3,26 +3,20 @@ import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validateFields';
 import {
   createUser,
+  deactivateUser,
   deleteUser,
   getUser,
   getUsers,
   updateUser,
 } from '../controllers';
 import { emailIsAlreadyUsed, isValidRole, userExist } from '../helpers';
+import { hasRol, superAdminRol, validateJWT } from '../middlewares';
 
 const router = Router();
 
 router.get('/', getUsers);
 
-router.get(
-  '/:id',
-  [
-    check('id', 'No existe un usuario con ese id'),
-    check('id').custom(userExist),
-    validateFields,
-  ],
-  getUser
-);
+router.get('/:id', [check('id').custom(userExist), validateFields], getUser);
 
 router.post(
   '/',
@@ -53,21 +47,24 @@ router.post(
 
 router.put(
   '/:id',
+  [validateJWT, check('id').custom(userExist), validateFields],
+  updateUser
+);
+
+router.put(
+  '/deactivate-user/:id',
   [
-    check('id', 'No existe un usuario con ese id'),
+    validateJWT,
+    hasRol('Super Administrador', 'Administrador'),
     check('id').custom(userExist),
     validateFields,
   ],
-  updateUser
+  deactivateUser
 );
 
 router.delete(
   '/:id',
-  [
-    check('id', 'No existe un usuario con ese id'),
-    check('id').custom(userExist),
-    validateFields,
-  ],
+  [validateJWT, superAdminRol, check('id').custom(userExist), validateFields],
   deleteUser
 );
 

@@ -117,7 +117,7 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const deactivateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const date = moment().format();
 
@@ -126,9 +126,30 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     const { rows } = await db.query(text);
 
-    return res
-      .status(200)
-      .json({ ok: true, msg: 'Usuario dado de baja', deletedUser: rows[0] });
+    return res.status(200).json({
+      ok: true,
+      msg: 'Usuario dado de baja',
+      deactivatedUser: rows[0],
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({ ok: false, msg: 'Error', error });
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const text: string = `DELETE FROM users WHERE id = '${id}' RETURNING*`;
+
+    const { rows } = await db.query(text);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Usuario dado de eliminado',
+      deletedUser: rows[0],
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });
