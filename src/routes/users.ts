@@ -14,9 +14,17 @@ import { hasRol, superAdminRol, validateJWT } from '../middlewares';
 
 const router = Router();
 
-router.get('/', getUsers);
+router.get(
+  '/',
+  [validateJWT, hasRol('Super Administrador', 'Administrador'), validateFields],
+  getUsers
+);
 
-router.get('/:id', [check('id').custom(userExist), validateFields], getUser);
+router.get(
+  '/:id',
+  [validateJWT, check('id').custom(userExist), validateFields],
+  getUser
+);
 
 router.post(
   '/',

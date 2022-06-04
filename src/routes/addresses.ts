@@ -20,12 +20,7 @@ router.get(
 
 router.get(
   '/:id',
-  [
-    validateJWT,
-    hasRol('Super Administrador', 'Administrador', 'Usuario'),
-    check('id').custom(addressExist),
-    validateFields,
-  ],
+  [validateJWT, check('id').custom(addressExist), validateFields],
   getAddress
 );
 
