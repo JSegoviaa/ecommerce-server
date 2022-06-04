@@ -30,6 +30,34 @@ export const userExist = async (id: string) => {
   return;
 };
 
+export const userExistsInAddress = async (id: string) => {
+  const text: string = `SELECT user_id FROM addresses WHERE user_id = '${id}' LIMIT 1`;
+
+  const userExist = await db.query(text);
+
+  if (userExist.rows.length === 0) return;
+
+  if (userExist) {
+    throw new Error(`El usuario no puede tener más de dos direcciones`);
+  }
+
+  return;
+};
+
+export const addressExist = async (id: string) => {
+  const text: string = `SELECT * FROM addresses WHERE id = '${id}' LIMIT 1`;
+
+  const addressExist = await db.query(text);
+
+  if (addressExist.rows.length === 0) {
+    throw new Error(`No existe una dirección con el id ${id}`);
+  }
+
+  if (addressExist) return;
+
+  return;
+};
+
 export const isValidRole = async (role: string) => {
   const text: string = `SELECT * FROM roles WHERE id = '${role}'`;
   const roleExist = await db.query(text);
