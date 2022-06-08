@@ -1,4 +1,5 @@
 import { db } from '../db';
+import { randomId, slugify } from './slugify';
 
 export const emailIsAlreadyUsed = async (email: string) => {
   const text: string = `SELECT email FROM users WHERE email = '${email}' LIMIT 1`;
@@ -58,6 +59,20 @@ export const addressExist = async (id: string) => {
   return;
 };
 
+export const categoryExist = async (id: string) => {
+  const text: string = `SELECT * FROM categories WHERE id = '${id}' LIMIT 1`;
+
+  const categoryExist = await db.query(text);
+
+  if (categoryExist.rows.length === 0) {
+    throw new Error(`No existe una categoría con el id ${id}`);
+  }
+
+  if (categoryExist) return;
+
+  return;
+};
+
 export const isValidRole = async (role: string) => {
   const text: string = `SELECT * FROM roles WHERE id = '${role}'`;
   const roleExist = await db.query(text);
@@ -67,4 +82,20 @@ export const isValidRole = async (role: string) => {
   }
 
   if (roleExist) return;
+};
+
+export const slugExist = async (slug: string) => {
+  const query = `SELECT * FROM categories WHERE slug = '${slug}'`;
+  const slugExist = await db.query(query);
+  console.log(slugExist.rows);
+  if (slugExist.rows.length === 0) {
+    return slug;
+  }
+
+  if (slugExist) {
+    const newSlug = slugify(slugExist.rows[0].slug);
+    const randomSlugId = randomId();
+
+    return newSlug + '-' + randomSlugId;
+  }
 };

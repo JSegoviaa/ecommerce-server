@@ -19,8 +19,11 @@ export const validateJWT = async (
     const { uid } = jwt.verify(token, process.env.JWT!) as any;
     const text: string = `
           SELECT 
-            users.id, 
-            users.is_active, 
+            users.id,
+            users.first_name,
+            users.last_name, 
+            users.is_active,
+            users.role_id, 
             roles.role 
           FROM 
             users 
