@@ -73,6 +73,20 @@ export const categoryExist = async (id: string) => {
   return;
 };
 
+export const subcategoryExist = async (id: string) => {
+  const text: string = `SELECT * FROM subcategories WHERE id = '${id}' LIMIT 1`;
+
+  const subcategoryExist = await db.query(text);
+
+  if (subcategoryExist.rows.length === 0) {
+    throw new Error(`No existe una subcategoría con el id ${id}`);
+  }
+
+  if (subcategoryExist) return;
+
+  return;
+};
+
 export const isValidRole = async (role: string) => {
   const text: string = `SELECT * FROM roles WHERE id = '${role}'`;
   const roleExist = await db.query(text);
@@ -84,10 +98,10 @@ export const isValidRole = async (role: string) => {
   if (roleExist) return;
 };
 
-export const slugExist = async (slug: string) => {
-  const query = `SELECT * FROM categories WHERE slug = '${slug}'`;
+export const slugExist = async (slug: string, category: string) => {
+  const query = `SELECT * FROM ${category} WHERE slug = '${slug}'`;
   const slugExist = await db.query(query);
-  console.log(slugExist.rows);
+
   if (slugExist.rows.length === 0) {
     return slug;
   }

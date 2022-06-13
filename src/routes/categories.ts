@@ -42,7 +42,12 @@ router.post(
 
 router.put(
   '/:id',
-  [check('id').custom(categoryExist), validateFields],
+  [
+    validateJWT,
+    hasRol('Super Administrador', 'Administrador', 'Moderador'),
+    check('id').custom(categoryExist),
+    validateFields,
+  ],
   updateCategory
 );
 
@@ -64,8 +69,8 @@ router.put(
 router.delete(
   '/:id',
   [
-    // validateJWT,
-    // superAdminRol,
+    validateJWT,
+    superAdminRol,
     check('id').custom(categoryExist),
     validateFields,
   ],

@@ -47,7 +47,7 @@ export const createCategory = async (req: Request, res: Response) => {
 
   const date = moment().format();
   const slug = slugify(title);
-  const newSlug = await slugExist(slug);
+  const newSlug = await slugExist(slug, 'categories');
 
   try {
     const text: string =
@@ -82,7 +82,7 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const updateCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-
+  //TODO
   try {
     return res.status(200).json({ ok: true, msg: 'Actualizar categoría', id });
   } catch (error) {
