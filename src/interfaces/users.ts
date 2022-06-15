@@ -9,4 +9,4 @@ export interface ReqUser {
   role_id: RoleID;
 }
 
-type RoleID = 1 | 2 | 3 | 4;
+export type RoleID = 1 | 2 | 3 | 4 | 5;

@@ -82,9 +82,34 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const updateCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-  //TODO
+  const { title, img, is_active, updated_by } = req.body;
+  const date = moment().format();
+  const slug = slugify(title);
+  const newSlug = await slugExist(slug, 'categories');
+
   try {
-    return res.status(200).json({ ok: true, msg: 'Actualizar categoría', id });
+    const text: string = `
+    UPDATE 
+      categories 
+    SET 
+      title = '${title}',
+      slug = '${newSlug}',
+      img = '${img}',
+      is_active = '${is_active}',
+      updated_by = '${updated_by}',
+      updated_at = '${date}'
+    WHERE id = '${id}' RETURNING *
+      `;
+
+    const { rows } = await db.query(text);
+
+    const updatedCategory = rows[0];
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Categoría actualizada correctamente',
+      updatedCategory,
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });

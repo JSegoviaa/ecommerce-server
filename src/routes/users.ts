@@ -8,6 +8,7 @@ import {
   getUser,
   getUsers,
   updateUser,
+  updateUsersRole,
 } from '../controllers';
 import { emailIsAlreadyUsed, isValidRole, userExist } from '../helpers';
 import { hasRol, superAdminRol, validateJWT } from '../middlewares';
@@ -45,7 +46,7 @@ router.post(
     check('email').custom(emailIsAlreadyUsed),
     check('role_id', 'El rol ingresado no es un rol válido').isFloat({
       min: 1,
-      max: 4,
+      max: 5,
     }),
     check('role_id').custom(isValidRole),
     validateFields,
@@ -69,6 +70,8 @@ router.put(
   ],
   deactivateUser
 );
+
+router.put('/role/:id', [validateFields], updateUsersRole);
 
 router.delete(
   '/:id',

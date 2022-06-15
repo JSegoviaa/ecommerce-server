@@ -1,6 +1,8 @@
 import { db } from '../db';
 import { randomId, slugify } from './slugify';
 
+type DB = 'categories' | 'subcategories' | 'products';
+
 export const emailIsAlreadyUsed = async (email: string) => {
   const text: string = `SELECT email FROM users WHERE email = '${email}' LIMIT 1`;
 
@@ -98,7 +100,7 @@ export const isValidRole = async (role: string) => {
   if (roleExist) return;
 };
 
-export const slugExist = async (slug: string, category: string) => {
+export const slugExist = async (slug: string, category: DB) => {
   const query = `SELECT * FROM ${category} WHERE slug = '${slug}'`;
   const slugExist = await db.query(query);
 

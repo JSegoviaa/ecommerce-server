@@ -8,7 +8,7 @@ import {
   getSubcategory,
   updateSubategory,
 } from '../controllers';
-import { subcategoryExist, userExist } from '../helpers';
+import { subcategoryExist, userExist, categoryExist } from '../helpers';
 import {
   hasRol,
   superAdminRol,
@@ -45,6 +45,12 @@ router.put(
   [
     validateJWT,
     hasRol('Super Administrador', 'Administrador', 'Moderador'),
+    check('updated_by', 'El usuario que actualiza la categoría es obligatorio')
+      .not()
+      .isEmpty(),
+    check('updated_by').custom(userExist),
+    check('category_id', 'La categoría es obligatoria').not().isEmpty(),
+    check('category_id').custom(categoryExist),
     check('id').custom(subcategoryExist),
     validateFields,
   ],
