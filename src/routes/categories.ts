@@ -45,6 +45,20 @@ router.put(
   [
     validateJWT,
     hasRol('Super Administrador', 'Administrador', 'Moderador'),
+    check('title', 'El título es obligatorio').not().isEmpty(),
+    check('img', 'La imagen es obligatoria').not().isEmpty(),
+    check('is_active', 'El estado de la categoría es obligatorio')
+      .not()
+      .isEmpty(),
+    check('is_published', 'El estado de la categoría es obligatorio')
+      .not()
+      .isEmpty(),
+    check('is_active', 'El tipo de dato no es correcto').isBoolean(),
+    check('is_published', 'El tipo de dato no es correcto').isBoolean(),
+    check('updated_by', 'El usuario que actualiza la categoría es obligatorio')
+      .not()
+      .isEmpty(),
+    check('updated_by').custom(userExist),
     check('id').custom(categoryExist),
     validateFields,
   ],

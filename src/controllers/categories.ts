@@ -82,7 +82,7 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const updateCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { title, img, is_active, updated_by } = req.body;
+  const { title, img, is_active, updated_by, is_published } = req.body;
   const date = moment().format();
   const slug = slugify(title);
   const newSlug = await slugExist(slug, 'categories');
@@ -96,6 +96,7 @@ export const updateCategory = async (req: Request, res: Response) => {
       slug = '${newSlug}',
       img = '${img}',
       is_active = '${is_active}',
+      is_published = '${is_published}',
       updated_by = '${updated_by}',
       updated_at = '${date}'
     WHERE id = '${id}' RETURNING *

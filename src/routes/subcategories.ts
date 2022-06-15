@@ -45,6 +45,14 @@ router.put(
   [
     validateJWT,
     hasRol('Super Administrador', 'Administrador', 'Moderador'),
+    check('is_active', 'El estado de la categoría es obligatorio')
+      .not()
+      .isEmpty(),
+    check('is_published', 'El estado de la categoría es obligatorio')
+      .not()
+      .isEmpty(),
+    check('is_active', 'Se requiere un valor Verdadero o Falso').isBoolean(),
+    check('is_published', 'Se requiere un valor Verdadero o Falso').isBoolean(),
     check('updated_by', 'El usuario que actualiza la categoría es obligatorio')
       .not()
       .isEmpty(),

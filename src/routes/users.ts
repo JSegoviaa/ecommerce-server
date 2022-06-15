@@ -71,7 +71,21 @@ router.put(
   deactivateUser
 );
 
-router.put('/role/:id', [validateFields], updateUsersRole);
+router.put(
+  '/role/:id',
+  [
+    validateJWT,
+    superAdminRol,
+    check('id').custom(userExist),
+    check('role', 'El rol ingresado no es un rol válido').isFloat({
+      min: 1,
+      max: 5,
+    }),
+    check('role').custom(isValidRole),
+    validateFields,
+  ],
+  updateUsersRole
+);
 
 router.delete(
   '/:id',

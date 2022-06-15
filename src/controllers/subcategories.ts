@@ -83,7 +83,8 @@ export const createSubategory = async (req: Request, res: Response) => {
 
 export const updateSubategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { title, img, is_active, updated_by, category_id } = req.body;
+  const { title, img, is_active, updated_by, category_id, is_published } =
+    req.body;
   const date = moment().format();
   const slug = slugify(title);
   const newSlug = await slugExist(slug, 'subcategories');
@@ -97,6 +98,7 @@ export const updateSubategory = async (req: Request, res: Response) => {
       slug = '${newSlug}',
       img = '${img}',
       is_active = '${is_active}',
+      is_published = '${is_published}',
       updated_by = '${updated_by}',
       updated_at = '${date}',
       category_id = ${category_id}
@@ -106,13 +108,11 @@ export const updateSubategory = async (req: Request, res: Response) => {
     const { rows } = await db.query(text);
 
     const updatedSubcategory = rows[0];
-    return res
-      .status(200)
-      .json({
-        ok: true,
-        msg: 'Se ha actualizado la subcategoría correctamente',
-        updatedSubcategory,
-      });
+    return res.status(200).json({
+      ok: true,
+      msg: 'Se ha actualizado la subcategoría correctamente',
+      updatedSubcategory,
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });
