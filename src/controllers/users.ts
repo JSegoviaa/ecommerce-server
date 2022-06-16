@@ -14,7 +14,11 @@ export const getUsers = async (req: Request, res: Response) => {
   } = req.query;
   try {
     //TODO validar order y sort
-    const text: string = `SELECT * FROM users WHERE is_active = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3`;
+    const text: string = `
+    SELECT users.id, first_name, last_name, email, created_at, updated_at, is_active, role_id, roles.role FROM users
+    INNER JOIN roles ON users.role_id = roles.id
+    WHERE is_active = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3
+    `;
     const values = [is_active, from, limit];
 
     const count: string = `SELECT COUNT(*) FROM  users WHERE is_active = $1`;
@@ -24,7 +28,7 @@ export const getUsers = async (req: Request, res: Response) => {
       await db.query(text, values),
       await db.query(count, countValues),
     ]);
-    const algo = users;
+
     return res.status(200).json({
       ok: true,
       msg: 'Obtener usuarios',
@@ -42,13 +46,15 @@ export const getUser = async (req: Request, res: Response) => {
 
   try {
     const text: string = `
-    SELECT 
+    SELECT
+      users.id,
       first_name, 
       last_name, 
       email, 
       created_at, 
       updated_at, 
       is_active, 
+      roles.id role_id,
       roles.role 
     FROM 
       users 
@@ -68,10 +74,17 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { first_name, last_name, email, password, role_id } = req.body;
+  const { first_name, last_name, email, password, role_id, confirmPassword } =
+    req.body;
   const date = moment().format();
 
   try {
+    if (password !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ ok: false, msg: 'Las contraseñas no coinciden' });
+    }
+
     //Encriptar contraseña
     const salt = bcryptjs.genSaltSync(10);
     const hash = bcryptjs.hashSync(password, salt);
@@ -151,7 +164,6 @@ export const deactivateUser = async (req: Request, res: Response) => {
 export const updateUsersRole = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { role } = req.body;
-
   try {
     const text: string = `UPDATE users SET role_id = $1 WHERE id = $2 RETURNING *`;
     const values = [role, id];

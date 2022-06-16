@@ -28,15 +28,16 @@ export const validateJWT = async (
           FROM 
             users 
           INNER JOIN roles ON users.role_id = roles.id 
-          WHERE users.id = '${uid}'
+          WHERE users.id = $1
           `;
+    const values = [uid];
 
-    const { rows } = await db.query(text);
+    const { rows } = await db.query(text, values);
     const user = rows[0];
 
     if (!user) {
       return res.status(401).json({
-        msg: 'El usuario que intenta hacer esa acción no existe',
+        msg: 'El usuario que intenta hacer esta acción no existe',
       });
     }
 

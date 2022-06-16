@@ -50,6 +50,23 @@ export const userExistsInAddress = async (id: number) => {
   return;
 };
 
+export const userDeactivated = async (id: number) => {
+  const text: string = `SELECT * FROM users WHERE id = $1`;
+  const values = [id];
+
+  const userHasBeenDeactivated = await db.query(text, values);
+
+  if (userHasBeenDeactivated.rows.length === 0) return;
+
+  if (userHasBeenDeactivated.rows[0].is_active) return;
+
+  if (!userHasBeenDeactivated.rows[0].is_active) {
+    throw new Error(
+      'Para actualizar la información del usuario hay que darlo de alta'
+    );
+  }
+};
+
 export const addressExist = async (id: number) => {
   const text: string = `SELECT * FROM addresses WHERE id = $1 LIMIT 1`;
   const values = [id];

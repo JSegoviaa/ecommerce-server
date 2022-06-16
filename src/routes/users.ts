@@ -10,7 +10,12 @@ import {
   updateUser,
   updateUsersRole,
 } from '../controllers';
-import { emailIsAlreadyUsed, isValidRole, userExist } from '../helpers';
+import {
+  emailIsAlreadyUsed,
+  isValidRole,
+  userExist,
+  userDeactivated,
+} from '../helpers';
 import { hasRol, superAdminRol, validateJWT } from '../middlewares';
 
 const router = Router();
@@ -35,13 +40,24 @@ router.post(
     check('email', 'El correo es obligatorio').not().isEmpty(),
     check('email', 'Ingrese un correo electrónico válido').isEmail(),
     check('password', 'La contraseña es obligatoria').not().isEmpty(),
+    check('confirmPassword', 'La confirmación de contraseña es obligatoria')
+      .not()
+      .isEmpty(),
     check(
       'password',
       'La contraseña debe de contener al menos un número, una letra en mayúscula, una letra en minúscula y un símbolo'
     ).isStrongPassword(),
     check(
+      'confirmPassword',
+      'La confirmación de contraseña debe de contener al menos un número, una letra en mayúscula, una letra en minúscula y un símbolo'
+    ).isStrongPassword(),
+    check(
       'password',
       'La contraseña debe tener al menos 8 caracteres'
+    ).isLength({ min: 8 }),
+    check(
+      'confirmPassword',
+      'La confirmación de contraseña debe tener al menos 8 caracteres'
     ).isLength({ min: 8 }),
     check('email').custom(emailIsAlreadyUsed),
     check('role_id', 'El rol ingresado no es un rol válido').isFloat({
@@ -56,7 +72,12 @@ router.post(
 
 router.put(
   '/:id',
-  [validateJWT, check('id').custom(userExist), validateFields],
+  [
+    validateJWT,
+    check('id').custom(userExist),
+    check('id').custom(userDeactivated),
+    validateFields,
+  ],
   updateUser
 );
 
@@ -76,6 +97,7 @@ router.put(
   [
     validateJWT,
     superAdminRol,
+    check('id').custom(userDeactivated),
     check('id').custom(userExist),
     check('role', 'El rol ingresado no es un rol válido').isFloat({
       min: 1,

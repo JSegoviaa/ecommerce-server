@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
+import moment from 'moment';
 import bcryptjs from 'bcryptjs';
 import { db } from '../db';
 import { generateJWT } from '../helpers';
@@ -44,5 +45,66 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });
+  }
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({ ok: false, error, msg: 'Error' });
+  }
+};
+
+export const changeEmail = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { password, confirmPassword, newEmail } = req.body;
+  const date = moment().format();
+
+  try {
+    if (password !== confirmPassword) {
+      return res
+        .status(401)
+        .json({ ok: false, msg: 'Las contraseñas no coinciden' });
+    }
+
+    const text: string = `SELECT * FROM users WHERE id = $1`;
+    const values = [id];
+
+    const { rows } = await db.query(text, values);
+    const user = rows[0];
+
+    //Validar contraseña
+    const validPassword = bcryptjs.compareSync(password, user.password);
+
+    if (!validPassword) {
+      return res
+        .status(401)
+        .json({ ok: false, msg: 'La contraseña es incorrecta' });
+    }
+
+    const updateText: string =
+      'UPDATE users SET email = $1, updated_at = $2 WHERE id = $3 RETURNING*';
+
+    const updateValues = [newEmail, date, id];
+
+    const updatedUser = await db.query(updateText, updateValues);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Correo actualizado correctamente',
+      updatedUser: updatedUser.rows[0],
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({ ok: false, error, msg: 'Error' });
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({ ok: false, error, msg: 'Error' });
   }
 };
