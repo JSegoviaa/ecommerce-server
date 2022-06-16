@@ -5,17 +5,26 @@ import { db } from '../db';
 import { generateJWT } from '../helpers';
 
 export const getUsers = async (req: Request, res: Response) => {
-  const { limit = 20, sort = 'ASC', from = 0, is_active = true } = req.query;
-
+  const {
+    limit = 20,
+    sort = 'ASC',
+    from = 0,
+    is_active = true,
+    order_by = 'id',
+  } = req.query;
   try {
-    const text: string = `SELECT * FROM  users WHERE is_active='${is_active}' ORDER BY id ${sort} OFFSET ${from}  LIMIT ${limit} `;
-    const count: string = `SELECT COUNT(*) FROM  users WHERE is_active='${true}'`;
+    //TODO validar order y sort
+    const text: string = `SELECT * FROM users WHERE is_active = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3`;
+    const values = [is_active, from, limit];
 
-    const [total, users] = await Promise.all([
-      await db.query(count),
-      await db.query(text),
+    const count: string = `SELECT COUNT(*) FROM  users WHERE is_active = $1`;
+    const countValues = [is_active];
+
+    const [users, total] = await Promise.all([
+      await db.query(text, values),
+      await db.query(count, countValues),
     ]);
-
+    const algo = users;
     return res.status(200).json({
       ok: true,
       msg: 'Obtener usuarios',
@@ -24,7 +33,7 @@ export const getUsers = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log({ error });
-    return res.status(500).json({ ok: false, msg: 'error', error });
+    return res.status(500).json({ ok: false, msg: 'error', error, sort });
   }
 };
 
@@ -44,10 +53,10 @@ export const getUser = async (req: Request, res: Response) => {
     FROM 
       users 
     INNER JOIN roles ON users.role_id = roles.id 
-    WHERE users.id = ${id} LIMIT 1
+    WHERE users.id = $1 LIMIT 1
     `;
-
-    const { rows } = await db.query(text);
+    const values = [id];
+    const { rows } = await db.query(text, values);
 
     return res
       .status(200)
@@ -104,9 +113,9 @@ export const updateUser = async (req: Request, res: Response) => {
   const date = moment().format();
 
   try {
-    const text: string = `UPDATE users SET first_name = '${first_name}', last_name = '${last_name}', updated_at = '${date}' WHERE id = ${id} RETURNING*`;
-
-    const { rows } = await db.query(text);
+    const text: string = `UPDATE users SET first_name = $1, last_name = $2, updated_at = $3 WHERE id = $4 RETURNING*`;
+    const values = [first_name, last_name, date, id];
+    const { rows } = await db.query(text, values);
 
     return res
       .status(200)
@@ -119,12 +128,14 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deactivateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { is_active = false } = req.body;
   const date = moment().format();
 
   try {
-    const text: string = `UPDATE users SET is_active='${false}', updated_at = '${date}' WHERE id = ${id} RETURNING*`;
+    const text: string = `UPDATE users SET is_active = $1, updated_at = $2 WHERE id = $3 RETURNING*`;
+    const values = [is_active, date, id];
 
-    const { rows } = await db.query(text);
+    const { rows } = await db.query(text, values);
 
     return res.status(200).json({
       ok: true,
@@ -142,9 +153,10 @@ export const updateUsersRole = async (req: Request, res: Response) => {
   const { role } = req.body;
 
   try {
-    const text: string = `UPDATE users SET role_id = '${role}' WHERE id = '${id}' RETURNING *`;
+    const text: string = `UPDATE users SET role_id = $1 WHERE id = $2 RETURNING *`;
+    const values = [role, id];
 
-    const { rows } = await db.query(text);
+    const { rows } = await db.query(text, values);
 
     return res.status(200).json({
       ok: true,
@@ -161,9 +173,10 @@ export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const text: string = `DELETE FROM users WHERE id = '${id}' RETURNING*`;
+    const text: string = `DELETE FROM users WHERE id = $1 RETURNING*`;
+    const values = [id];
 
-    const { rows } = await db.query(text);
+    const { rows } = await db.query(text, values);
 
     return res.status(200).json({
       ok: true,

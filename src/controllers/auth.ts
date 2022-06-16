@@ -7,8 +7,10 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const text: string = `SELECT * FROM users WHERE email = '${email}'`;
-    const { rows } = await db.query(text);
+    const text: string = `SELECT * FROM users WHERE email = $1`;
+    const values = [email];
+
+    const { rows } = await db.query(text, values);
     const user = rows[0];
 
     if (!user) {

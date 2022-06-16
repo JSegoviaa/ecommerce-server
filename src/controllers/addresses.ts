@@ -3,15 +3,18 @@ import { db } from '../db';
 import moment from 'moment';
 
 export const getAddresses = async (req: Request, res: Response) => {
-  const { limit = 20, sort = 'ASC', from = 0 } = req.query;
+  const { limit = 20, sort = 'ASC', from = 0, order_by = 'id' } = req.query;
 
   try {
-    const text: string = `SELECT * FROM  addresses ORDER BY id ${sort} OFFSET ${from}  LIMIT ${limit} `;
-    const count: string = `SELECT COUNT(*) FROM  addresses`;
+    //TODO validar order y from
+    const text: string = `SELECT * FROM  addresses ORDER BY ${order_by} ${sort} OFFSET $1 LIMIT $2`;
+    const values = [from, limit];
+
+    const count: string = `SELECT COUNT(*) FROM addresses`;
 
     const [total, addresses] = await Promise.all([
       await db.query(count),
-      await db.query(text),
+      await db.query(text, values),
     ]);
 
     return res.status(200).json({
@@ -30,9 +33,10 @@ export const getAddress = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const text: string = `SELECT * FROM addresses WHERE id = '${id}'`;
+    const text: string = `SELECT * FROM addresses WHERE id = $1`;
+    const values = [id];
 
-    const { rows } = await db.query(text);
+    const { rows } = await db.query(text, values);
     const address = rows[0];
 
     return res.status(200).json({ ok: true, msg: 'dirección', address });
@@ -112,19 +116,31 @@ export const updateAddress = async (req: Request, res: Response) => {
     UPDATE 
         addresses 
     SET 
-        country = '${country}', 
-        state = '${state}', 
-        municipality = '${municipality}', 
-        city = '${city}', 
-        colony = '${colony}', 
-        postal_code = '${postal_code}',
-        address = '${address}', 
-        info = '${info}',
-        updated_at = '${date}'
-    WHERE id = '${id}' RETURNING *
+        country = $1, 
+        state = $2, 
+        municipality = $3, 
+        city = $4, 
+        colony = $5, 
+        postal_code = $6,
+        address = $7, 
+        info = $8,
+        updated_at = $9
+    WHERE id = $10 RETURNING *
     `;
+    const values = [
+      country,
+      state,
+      municipality,
+      city,
+      colony,
+      postal_code,
+      address,
+      info,
+      date,
+      id,
+    ];
 
-    const { rows } = await db.query(text);
+    const { rows } = await db.query(text, values);
 
     const updatedAddress = rows[0];
 
@@ -140,9 +156,10 @@ export const updateAddress = async (req: Request, res: Response) => {
 export const deleteAddress = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const text: string = `DELETE FROM addresses WHERE id = '${id}' RETURNING*`;
+    const text: string = `DELETE FROM addresses WHERE id = $1 RETURNING*`;
+    const values = [id];
 
-    const { rows } = await db.query(text);
+    const { rows } = await db.query(text, values);
 
     const deletedAddress = rows[0];
 

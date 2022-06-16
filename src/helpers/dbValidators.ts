@@ -4,9 +4,10 @@ import { randomId, slugify } from './slugify';
 type DB = 'categories' | 'subcategories' | 'products';
 
 export const emailIsAlreadyUsed = async (email: string) => {
-  const text: string = `SELECT email FROM users WHERE email = '${email}' LIMIT 1`;
+  const text: string = `SELECT email FROM users WHERE email = $1 LIMIT 1`;
+  const values = [email];
 
-  const emailExist = await db.query(text);
+  const emailExist = await db.query(text, values);
 
   if (emailExist.rows.length === 0) return;
 
@@ -19,10 +20,11 @@ export const emailIsAlreadyUsed = async (email: string) => {
   return;
 };
 
-export const userExist = async (id: string) => {
-  const text: string = `SELECT * FROM users WHERE id = '${id}' LIMIT 1`;
+export const userExist = async (id: number) => {
+  const text: string = `SELECT * FROM users WHERE id = $1 LIMIT 1`;
+  const values = [id];
 
-  const userExist = await db.query(text);
+  const userExist = await db.query(text, values);
 
   if (userExist.rows.length === 0) {
     throw new Error(`El usuario con el id ${id} no existe`);
@@ -33,10 +35,11 @@ export const userExist = async (id: string) => {
   return;
 };
 
-export const userExistsInAddress = async (id: string) => {
-  const text: string = `SELECT user_id FROM addresses WHERE user_id = '${id}' LIMIT 1`;
+export const userExistsInAddress = async (id: number) => {
+  const text: string = `SELECT user_id FROM addresses WHERE user_id = $1 LIMIT 1`;
+  const values = [id];
 
-  const userExist = await db.query(text);
+  const userExist = await db.query(text, values);
 
   if (userExist.rows.length === 0) return;
 
@@ -47,10 +50,11 @@ export const userExistsInAddress = async (id: string) => {
   return;
 };
 
-export const addressExist = async (id: string) => {
-  const text: string = `SELECT * FROM addresses WHERE id = '${id}' LIMIT 1`;
+export const addressExist = async (id: number) => {
+  const text: string = `SELECT * FROM addresses WHERE id = $1 LIMIT 1`;
+  const values = [id];
 
-  const addressExist = await db.query(text);
+  const addressExist = await db.query(text, values);
 
   if (addressExist.rows.length === 0) {
     throw new Error(`No existe una dirección con el id ${id}`);
@@ -61,10 +65,11 @@ export const addressExist = async (id: string) => {
   return;
 };
 
-export const categoryExist = async (id: string) => {
-  const text: string = `SELECT * FROM categories WHERE id = '${id}' LIMIT 1`;
+export const categoryExist = async (id: number) => {
+  const text: string = `SELECT * FROM categories WHERE id = $1 LIMIT 1`;
+  const values = [id];
 
-  const categoryExist = await db.query(text);
+  const categoryExist = await db.query(text, values);
 
   if (categoryExist.rows.length === 0) {
     throw new Error(`No existe una categoría con el id ${id}`);
@@ -75,10 +80,11 @@ export const categoryExist = async (id: string) => {
   return;
 };
 
-export const subcategoryExist = async (id: string) => {
-  const text: string = `SELECT * FROM subcategories WHERE id = '${id}' LIMIT 1`;
+export const subcategoryExist = async (id: number) => {
+  const text: string = `SELECT * FROM subcategories WHERE id = $1 LIMIT 1`;
+  const values = [id];
 
-  const subcategoryExist = await db.query(text);
+  const subcategoryExist = await db.query(text, values);
 
   if (subcategoryExist.rows.length === 0) {
     throw new Error(`No existe una subcategoría con el id ${id}`);
@@ -89,9 +95,11 @@ export const subcategoryExist = async (id: string) => {
   return;
 };
 
-export const isValidRole = async (role: string) => {
-  const text: string = `SELECT * FROM roles WHERE id = '${role}'`;
-  const roleExist = await db.query(text);
+export const isValidRole = async (role: number) => {
+  const text: string = `SELECT * FROM roles WHERE id = $1`;
+  const values = [role];
+
+  const roleExist = await db.query(text, values);
 
   if (roleExist.rows.length === 0) {
     throw new Error(`El rol ${role} no es un rol válido`);
@@ -101,8 +109,11 @@ export const isValidRole = async (role: string) => {
 };
 
 export const slugExist = async (slug: string, category: DB) => {
-  const query = `SELECT * FROM ${category} WHERE slug = '${slug}'`;
-  const slugExist = await db.query(query);
+  //TODO validar category
+  const query = `SELECT * FROM ${category} WHERE slug = $1`;
+  const values = [slug];
+
+  const slugExist = await db.query(query, values);
 
   if (slugExist.rows.length === 0) {
     return slug;

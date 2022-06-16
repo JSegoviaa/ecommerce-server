@@ -1,12 +1,12 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import {
+  addresses,
+  auth,
   categories,
   products,
   subcategories,
   users,
-  auth,
-  addresses,
 } from '../routes';
 
 class Server {
