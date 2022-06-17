@@ -13,14 +13,13 @@ export const getUsers = async (req: Request, res: Response) => {
     order_by = 'id',
   } = req.query;
   try {
-    //TODO validar order y sort
     const text: string = `
     SELECT users.id, first_name, last_name, email, created_at, updated_at, is_active, role_id, roles.role FROM users
     INNER JOIN roles ON users.role_id = roles.id
     WHERE is_active = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3
     `;
-    const values = [is_active, from, limit];
 
+    const values = [is_active, from, limit];
     const count: string = `SELECT COUNT(*) FROM  users WHERE is_active = $1`;
     const countValues = [is_active];
 
@@ -37,7 +36,7 @@ export const getUsers = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log({ error });
-    return res.status(500).json({ ok: false, msg: 'error', error, sort });
+    return res.status(500).json({ ok: false, msg: 'error', error });
   }
 };
 

@@ -8,7 +8,13 @@ import {
   getSubcategory,
   updateSubategory,
 } from '../controllers';
-import { subcategoryExist, userExist, categoryExist } from '../helpers';
+import {
+  subcategoryExist,
+  userExist,
+  categoryExist,
+  sortQueryValidator,
+  categoryQueryValidator,
+} from '../helpers';
 import {
   hasRol,
   superAdminRol,
@@ -18,7 +24,15 @@ import {
 
 const router = Router();
 
-router.get('/', getSubcategories);
+router.get(
+  '/',
+  [
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(categoryQueryValidator),
+    validateFields,
+  ],
+  getSubcategories
+);
 
 router.get(
   '/:id',

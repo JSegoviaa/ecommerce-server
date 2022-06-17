@@ -15,6 +15,8 @@ import {
   isValidRole,
   userExist,
   userDeactivated,
+  sortQueryValidator,
+  userQueryVaidator,
 } from '../helpers';
 import { hasRol, superAdminRol, validateJWT } from '../middlewares';
 
@@ -22,7 +24,13 @@ const router = Router();
 
 router.get(
   '/',
-  [validateJWT, hasRol('Super Administrador', 'Administrador'), validateFields],
+  [
+    validateJWT,
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(userQueryVaidator),
+    hasRol('Super Administrador', 'Administrador'),
+    validateFields,
+  ],
   getUsers
 );
 

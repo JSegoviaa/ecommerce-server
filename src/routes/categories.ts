@@ -8,7 +8,12 @@ import {
   getCategory,
   updateCategory,
 } from '../controllers';
-import { categoryExist, userExist } from '../helpers';
+import {
+  categoryExist,
+  categoryQueryValidator,
+  sortQueryValidator,
+  userExist,
+} from '../helpers';
 import {
   hasRol,
   superAdminRol,
@@ -18,7 +23,15 @@ import {
 
 const router = Router();
 
-router.get('/', getCategories);
+router.get(
+  '/',
+  [
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(categoryQueryValidator),
+    validateFields,
+  ],
+  getCategories
+);
 
 router.get(
   '/:id',
