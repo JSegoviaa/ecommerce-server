@@ -18,7 +18,12 @@ import {
   sortQueryValidator,
   userQueryVaidator,
 } from '../helpers';
-import { hasRol, superAdminRol, validateJWT } from '../middlewares';
+import {
+  hasRol,
+  superAdminRol,
+  validateJWT,
+  validateUser,
+} from '../middlewares';
 
 const router = Router();
 
@@ -36,7 +41,7 @@ router.get(
 
 router.get(
   '/:id',
-  [validateJWT, check('id').custom(userExist), validateFields],
+  [validateJWT, validateUser, check('id').custom(userExist), validateFields],
   getUser
 );
 
@@ -82,6 +87,7 @@ router.put(
   '/:id',
   [
     validateJWT,
+    validateUser,
     check('id').custom(userExist),
     check('id').custom(userDeactivated),
     validateFields,

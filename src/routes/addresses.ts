@@ -7,14 +7,26 @@ import {
   getAddresses,
   updateAddress,
 } from '../controllers';
-import { addressExist, userExist, userExistsInAddress } from '../helpers';
+import {
+  addressExist,
+  addressQueryValidator,
+  sortQueryValidator,
+  userExist,
+  userExistsInAddress,
+} from '../helpers';
 import { hasRol, validateFields, validateJWT } from '../middlewares';
 
 const router = Router();
 
 router.get(
   '/',
-  [validateJWT, hasRol('Super Administrador', 'Administrador'), validateFields],
+  [
+    validateJWT,
+    hasRol('Super Administrador', 'Administrador'),
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(addressQueryValidator),
+    validateFields,
+  ],
   getAddresses
 );
 

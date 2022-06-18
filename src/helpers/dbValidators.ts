@@ -126,7 +126,6 @@ export const isValidRole = async (role: number) => {
 };
 
 export const slugExist = async (slug: string, category: DB) => {
-  //TODO validar category
   const query = `SELECT * FROM ${category} WHERE slug = $1`;
   const values = [slug];
 

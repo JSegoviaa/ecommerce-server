@@ -1,7 +1,11 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ReqUser } from '../interfaces/users';
 
-export const superAdminRol = (req: any, res: Response, next: NextFunction) => {
+export const superAdminRol = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.user) {
     return res
       .status(500)
@@ -18,14 +22,14 @@ export const superAdminRol = (req: any, res: Response, next: NextFunction) => {
   next();
 };
 
-export const adminRol = (req: any, res: Response, next: NextFunction) => {
+export const adminRol = (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res
       .status(500)
       .json({ msg: 'Se quiere verificar el rol sin iniciar sesión' });
   }
 
-  const { role_id, first_name } = req.user as ReqUser;
+  const { role_id, first_name } = req.user;
   if (role_id !== 2) {
     return res.status(401).json({
       msg: `${first_name} no tiene permisos de Administrador para realizar esa acción`,
@@ -36,7 +40,7 @@ export const adminRol = (req: any, res: Response, next: NextFunction) => {
 };
 
 export const hasRol = (...roles: string[]) => {
-  return (req: any, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res
         .status(500)

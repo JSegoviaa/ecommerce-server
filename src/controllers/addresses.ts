@@ -6,7 +6,6 @@ export const getAddresses = async (req: Request, res: Response) => {
   const { limit = 20, sort = 'ASC', from = 0, order_by = 'id' } = req.query;
 
   try {
-    //TODO validar order y from
     const text: string = `SELECT * FROM  addresses ORDER BY ${order_by} ${sort} OFFSET $1 LIMIT $2`;
     const values = [from, limit];
 
@@ -31,8 +30,8 @@ export const getAddresses = async (req: Request, res: Response) => {
 
 export const getAddress = async (req: Request, res: Response) => {
   const { id } = req.params;
-
   try {
+    //TODO Validar que solo los admins y el mismo usuario pueda ver su dirección
     const text: string = `SELECT * FROM addresses WHERE id = $1`;
     const values = [id];
 

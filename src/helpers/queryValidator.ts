@@ -18,6 +18,18 @@ type OrderByCategory =
 
 type OrderByProduct = 'id';
 
+type OrderByAddress =
+  | 'id'
+  | 'country'
+  | 'state'
+  | 'municipality'
+  | 'city'
+  | 'colony'
+  | 'postal_code'
+  | 'address'
+  | 'info'
+  | 'user_id';
+
 export const sortQueryValidator = (query: SortQuery) => {
   switch (query) {
     case 'ASC':
@@ -73,6 +85,34 @@ export const productQueryValidator = (query: OrderByProduct) => {
   switch (query) {
     case 'id':
       break;
+
+    default:
+      throw new Error(`${query} no es una forma de ordenamiento válida.`);
+  }
+};
+
+export const addressQueryValidator = (query: OrderByAddress) => {
+  switch (query) {
+    case 'address':
+      return query;
+    case 'city':
+      return query;
+    case 'colony':
+      return query;
+    case 'country':
+      return query;
+    case 'id':
+      return query;
+    case 'info':
+      return query;
+    case 'municipality':
+      return query;
+    case 'postal_code':
+      return query;
+    case 'state':
+      return query;
+    case 'user_id':
+      return query;
 
     default:
       throw new Error(`${query} no es una forma de ordenamiento válida.`);

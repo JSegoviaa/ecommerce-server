@@ -13,7 +13,6 @@ export const getSubcategories = async (req: Request, res: Response) => {
   } = req.query;
 
   try {
-    //TODO validar order y sort
     const text: string = `SELECT * FROM  subcategories WHERE is_active = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3`;
     const values = [is_active, from, limit];
 
