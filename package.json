@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index"
+    "start": "node dist/index",
+    "tsc": "tsc",
+    "postinstall": "npm run tsc",
+    "dev": "nodemon dist/index"
   },
   "keywords": [],
   "author": "",
