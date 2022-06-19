@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import moment from 'moment';
 import bcryptjs from 'bcryptjs';
 import { db } from '../db';
@@ -49,10 +49,62 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const changePassword = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { password, confirmPassword, newPassword, confirmNewPassword } =
+    req.body;
+
+  const date = moment().format();
   try {
+    if (password !== confirmPassword) {
+      return res
+        .status(401)
+        .json({ ok: false, msg: 'Las contraseñas no coinciden' });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res
+        .status(401)
+        .json({ ok: false, msg: 'La nueva contraseña no coincide' });
+    }
+
+    const text: string = `SELECT * FROM users WHERE id = $1`;
+    const values = [id];
+
+    const { rows } = await db.query(text, values);
+    const user = rows[0];
+
+    //Validar contraseña
+    const validPassword = bcryptjs.compareSync(password, user.password);
+
+    if (!validPassword) {
+      return res
+        .status(401)
+        .json({ ok: false, msg: 'La contraseña es incorrecta' });
+    }
+
+    //Encriptar nueva contraseña
+    const salt = bcryptjs.genSaltSync(10);
+    const hash = bcryptjs.hashSync(newPassword, salt);
+
+    const updateText: string =
+      'UPDATE users SET password = $1, updated_at = $2 WHERE id = $3 RETURNING*';
+
+    const updateValues = [hash, date, id];
+
+    const updatedUser = await db.query(updateText, updateValues);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Su contraseña se ha actualizado correctamente',
+      updatedUser: updatedUser.rows[0],
+    });
   } catch (error) {
     console.log({ error });
-    return res.status(500).json({ ok: false, error, msg: 'Error' });
+    return res.status(500).json({
+      ok: false,
+      error,
+      msg: 'Error en el servidor al momento de actualizar la contraseña',
+    });
   }
 };
 
@@ -83,6 +135,7 @@ export const changeEmail = async (req: Request, res: Response) => {
         .json({ ok: false, msg: 'La contraseña es incorrecta' });
     }
 
+    //Actualizar correo de usuario
     const updateText: string =
       'UPDATE users SET email = $1, updated_at = $2 WHERE id = $3 RETURNING*';
 

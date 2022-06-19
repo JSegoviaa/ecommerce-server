@@ -3,7 +3,7 @@ import { check } from 'express-validator';
 import {
   createAddress,
   deleteAddress,
-  getAddress,
+  getAddressByUser,
   getAddresses,
   updateAddress,
 } from '../controllers';
@@ -14,7 +14,12 @@ import {
   userExist,
   userExistsInAddress,
 } from '../helpers';
-import { hasRol, validateFields, validateJWT } from '../middlewares';
+import {
+  hasRol,
+  validateFields,
+  validateJWT,
+  validateUser,
+} from '../middlewares';
 
 const router = Router();
 
@@ -32,8 +37,8 @@ router.get(
 
 router.get(
   '/:id',
-  [validateJWT, check('id').custom(addressExist), validateFields],
-  getAddress
+  [validateJWT, validateUser, check('id').custom(addressExist), validateFields],
+  getAddressByUser
 );
 
 router.post(
@@ -62,7 +67,7 @@ router.put(
   '/:id',
   [
     validateJWT,
-    hasRol('Usuario'),
+    validateUser,
     check('country', 'El país es obligatorio').not().isEmpty(),
     check('state', 'El estado es obligatorio').not().isEmpty(),
     check('municipality', 'El municipio es obligatorio').not().isEmpty(),
@@ -82,12 +87,7 @@ router.put(
 
 router.delete(
   '/:id',
-  [
-    validateJWT,
-    hasRol('Super Administrador', 'Administrador', 'Usuario'),
-    check('id').custom(addressExist),
-    validateFields,
-  ],
+  [validateJWT, validateUser, check('id').custom(addressExist), validateFields],
   deleteAddress
 );
 

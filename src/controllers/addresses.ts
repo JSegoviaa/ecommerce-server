@@ -28,11 +28,10 @@ export const getAddresses = async (req: Request, res: Response) => {
   }
 };
 
-export const getAddress = async (req: Request, res: Response) => {
+export const getAddressByUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    //TODO Validar que solo los admins y el mismo usuario pueda ver su dirección
-    const text: string = `SELECT * FROM addresses WHERE id = $1`;
+    const text: string = `SELECT * FROM addresses WHERE user_id = $1`;
     const values = [id];
 
     const { rows } = await db.query(text, values);

@@ -68,13 +68,13 @@ export const userDeactivated = async (id: number) => {
 };
 
 export const addressExist = async (id: number) => {
-  const text: string = `SELECT * FROM addresses WHERE id = $1 LIMIT 1`;
+  const text: string = `SELECT * FROM addresses WHERE user_id = $1 LIMIT 1`;
   const values = [id];
 
   const addressExist = await db.query(text, values);
 
   if (addressExist.rows.length === 0) {
-    throw new Error(`No existe una dirección con el id ${id}`);
+    throw new Error(`No existe una dirección asociada al usuario con id ${id}`);
   }
 
   if (addressExist) return;

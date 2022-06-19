@@ -31,9 +31,9 @@ router.get(
   '/',
   [
     validateJWT,
+    hasRol('Super Administrador', 'Administrador'),
     check('sort').custom(sortQueryValidator),
     check('order_by').custom(userQueryVaidator),
-    hasRol('Super Administrador', 'Administrador'),
     validateFields,
   ],
   getUsers
