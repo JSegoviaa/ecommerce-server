@@ -5,3 +5,4 @@ export * from './discountCode';
 export * from './products';
 export * from './subcategories';
 export * from './users';
+export * from './history';

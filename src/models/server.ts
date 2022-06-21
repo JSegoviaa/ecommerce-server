@@ -5,6 +5,7 @@ import {
   auth,
   categories,
   discountCode,
+  history,
   products,
   subcategories,
   users,
@@ -18,6 +19,7 @@ class Server {
     auth: '/api/auth',
     categories: '/api/categories',
     discountCode: '/api/discount-codes',
+    history: '/api/history',
     products: '/api/products',
     subcategories: '/api/subcategories',
     users: '/api/users',
@@ -50,6 +52,7 @@ class Server {
     this.app.use(this.endpoints.auth, auth);
     this.app.use(this.endpoints.categories, categories);
     this.app.use(this.endpoints.discountCode, discountCode);
+    this.app.use(this.endpoints.history, history);
     this.app.use(this.endpoints.products, products);
     this.app.use(this.endpoints.subcategories, subcategories);
     this.app.use(this.endpoints.users, users);
