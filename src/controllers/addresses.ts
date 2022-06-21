@@ -123,7 +123,7 @@ export const updateAddress = async (req: Request, res: Response) => {
         address = $7, 
         info = $8,
         updated_at = $9
-    WHERE id = $10 RETURNING *
+    WHERE user_id = $10 RETURNING *
     `;
     const values = [
       country,
@@ -154,7 +154,7 @@ export const updateAddress = async (req: Request, res: Response) => {
 export const deleteAddress = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const text: string = `DELETE FROM addresses WHERE id = $1 RETURNING*`;
+    const text: string = `DELETE FROM addresses WHERE user_id = $1 RETURNING*`;
     const values = [id];
 
     const { rows } = await db.query(text, values);

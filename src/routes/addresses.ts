@@ -37,7 +37,13 @@ router.get(
 
 router.get(
   '/:id',
-  [validateJWT, validateUser, check('id').custom(addressExist), validateFields],
+  [
+    validateJWT,
+    validateUser,
+    check('id').custom(userExist),
+    check('id').custom(addressExist),
+    validateFields,
+  ],
   getAddressByUser
 );
 
@@ -74,11 +80,13 @@ router.put(
     check('city', 'La ciudad es obligatoria').not().isEmpty(),
     check('colony', 'La colonia es obligatoria').not().isEmpty(),
     check('postal_code', 'El código postal es obligatorio').not().isEmpty(),
+    check('postal_code', 'El código postal debe ser un número').not().isFloat(),
     check('postal_code', 'El código postal debe tener 5 dígitos').isLength({
       min: 5,
       max: 5,
     }),
     check('address', 'La dirección es obligatoria').not().isEmpty(),
+    check('id').custom(userExist),
     check('id').custom(addressExist),
     validateFields,
   ],
@@ -87,7 +95,13 @@ router.put(
 
 router.delete(
   '/:id',
-  [validateJWT, validateUser, check('id').custom(addressExist), validateFields],
+  [
+    validateJWT,
+    validateUser,
+    check('id').custom(userExist),
+    check('id').custom(addressExist),
+    validateFields,
+  ],
   deleteAddress
 );
 
