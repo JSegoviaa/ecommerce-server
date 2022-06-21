@@ -30,6 +30,15 @@ type OrderByAddress =
   | 'info'
   | 'user_id';
 
+type OrderByCode =
+  | 'id'
+  | 'name'
+  | 'discount'
+  | 'created_at'
+  | 'updated_at'
+  | 'expires_at'
+  | 'is_active';
+
 export const sortQueryValidator = (query: SortQuery) => {
   switch (query) {
     case 'ASC':
@@ -112,6 +121,28 @@ export const addressQueryValidator = (query: OrderByAddress) => {
     case 'state':
       return query;
     case 'user_id':
+      return query;
+
+    default:
+      throw new Error(`${query} no es una forma de ordenamiento válida.`);
+  }
+};
+
+export const codesQueryValidator = (query: OrderByCode) => {
+  switch (query) {
+    case 'created_at':
+      return query;
+    case 'discount':
+      return query;
+    case 'expires_at':
+      return query;
+    case 'id':
+      return query;
+    case 'is_active':
+      return query;
+    case 'name':
+      return query;
+    case 'updated_at':
       return query;
 
     default:

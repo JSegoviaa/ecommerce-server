@@ -49,6 +49,7 @@ router.post(
     check('created_by', 'El usuario que crea la categoría es obligatorio')
       .not()
       .isEmpty(),
+    check('created_by').custom(userExist),
     validateFields,
   ],
   createSubategory

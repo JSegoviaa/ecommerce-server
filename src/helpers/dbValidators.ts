@@ -112,6 +112,36 @@ export const subcategoryExist = async (id: number) => {
   return;
 };
 
+export const codeExist = async (id: string) => {
+  const text: string = `SELECT * FROM codes WHERE id = $1 LIMIT 1`;
+  const values = [id];
+
+  const codeExist = await db.query(text, values);
+
+  if (codeExist.rows.length === 0) {
+    throw new Error(`No existe un código con el id ${id}`);
+  }
+
+  if (codeExist) return;
+
+  return;
+};
+
+export const codeNameExist = async (name: string) => {
+  const text: string = `SELECT * FROM codes WHERE name = $1 LIMIT 1`;
+  const values = [name];
+
+  const codeNameExist = await db.query(text, values);
+
+  if (codeNameExist.rows.length === 0) return;
+
+  if (codeNameExist) {
+    throw new Error('Ya existe un código con ese nombre');
+  }
+
+  return;
+};
+
 export const isValidRole = async (role: number) => {
   const text: string = `SELECT * FROM roles WHERE id = $1`;
   const values = [role];
