@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
+// import { v2 } from 'cloudinary';
+// import multer from 'multer';
+// import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import {
   createCategory,
   deactivateCategory,
@@ -22,6 +25,24 @@ import {
 } from '../middlewares';
 
 const router = Router();
+
+// v2.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
+
+// const storage = new CloudinaryStorage({
+//   cloudinary: v2,
+//   params: async (req: Request, file) => {
+//     return {
+//       folder: `ecommerce/categories/`,
+//       public_id: file.originalname,
+//     };
+//   },
+// });
+
+// const upload = multer({ storage }).single('picture');
 
 router.get(
   '/',
@@ -48,6 +69,7 @@ router.post(
     check('created_by', 'El usuario que crea la categoría es obligatorio')
       .not()
       .isEmpty(),
+    // upload,
     validateFields,
   ],
   createCategory

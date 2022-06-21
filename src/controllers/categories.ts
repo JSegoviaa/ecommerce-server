@@ -55,12 +55,17 @@ export const getCategory = async (req: Request, res: Response) => {
 
 export const createCategory = async (req: Request, res: Response) => {
   const { title, img = '', created_by, updated_by } = req.body;
-
   const date = moment().format();
   const slug = slugify(title);
   const newSlug = await slugExist(slug, 'categories');
-
   try {
+    // const url = req.file?.path;
+
+    // const textImg: string = `INSERT INTO images(url) VALUES($1) RETURNING *`;
+    // const valuesImg = [url];
+
+    // const images = await db.query(textImg, valuesImg);
+
     const text: string =
       'INSERT INTO categories(title, img, slug, is_active, is_published, created_by, updated_by, created_at, updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *';
 
