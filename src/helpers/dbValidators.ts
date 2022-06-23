@@ -112,6 +112,21 @@ export const subcategoryExist = async (id: number) => {
   return;
 };
 
+export const productExist = async (id: number) => {
+  const text: string = `SELECT * FROM products WHERE id = $1 LIMIT 1`;
+  const values = [id];
+
+  const productExist = await db.query(text, values);
+
+  if (productExist.rows.length === 0) {
+    throw new Error(`No existe un producto con el id ${id}`);
+  }
+
+  if (productExist) return;
+
+  return;
+};
+
 export const codeExist = async (id: string) => {
   const text: string = `SELECT * FROM codes WHERE id = $1 LIMIT 1`;
   const values = [id];
@@ -171,4 +186,19 @@ export const slugExist = async (slug: string, category: DB) => {
 
     return newSlug + '-' + randomSlugId;
   }
+};
+
+export const historyExist = async (id: number) => {
+  const text: string = `SELECT * FROM history WHERE id = $1 LIMIT 1`;
+  const values = [id];
+
+  const historyExist = await db.query(text, values);
+
+  if (historyExist.rows.length === 0) {
+    throw new Error(`No existe el historial con el id ${id}`);
+  }
+
+  if (historyExist) return;
+
+  return;
 };
