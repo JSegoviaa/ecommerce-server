@@ -203,7 +203,7 @@ export const historyExist = async (id: number) => {
   return;
 };
 export const variantExist = async (id: number) => {
-  const text: string = `SELECT * FROM variants WHERE id = $1 LIMIT 1`;
+  const text: string = `SELECT * FROM variant_sizes WHERE id = $1 LIMIT 1`;
   const values = [id];
 
   const variantExist = await db.query(text, values);

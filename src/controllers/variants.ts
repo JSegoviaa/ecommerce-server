@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { db } from '../db';
 
-export const getVariants = async (req: Request, res: Response) => {
+export const getVariantsSizes = async (req: Request, res: Response) => {
   try {
-    const text: string = 'SELECT * FROM variants';
+    const text: string = 'SELECT * FROM variant_sizes';
 
     const { rows } = await db.query(text);
 
@@ -19,12 +19,12 @@ export const getVariants = async (req: Request, res: Response) => {
   }
 };
 
-export const createVariant = async (req: Request, res: Response) => {
+export const createVariantSize = async (req: Request, res: Response) => {
   const { name, short } = req.body;
 
   try {
     const text: string =
-      'INSERT INTO variants(name, short) VALUES($1,$2) RETURNING*';
+      'INSERT INTO variant_sizes(name, short) VALUES($1,$2) RETURNING*';
 
     const values: string[] = [name, short];
 
@@ -44,13 +44,13 @@ export const createVariant = async (req: Request, res: Response) => {
   }
 };
 
-export const updateVariant = async (req: Request, res: Response) => {
+export const updateVariantSize = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, short } = req.body;
 
   try {
     const text: string =
-      'UPDATE variants SET name = $1, short = $2 WHERE id = $3 RETURNING*';
+      'UPDATE variant_sizes SET name = $1, short = $2 WHERE id = $3 RETURNING*';
 
     const values: string[] = [name, short, id];
 
@@ -72,11 +72,11 @@ export const updateVariant = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteVariant = async (req: Request, res: Response) => {
+export const deleteVariantSize = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const text: string = 'DELETE FROM variants WHERE id = $1 RETURNING*';
+    const text: string = 'DELETE FROM variants_sizes WHERE id = $1 RETURNING*';
     const values: string[] = [id];
 
     const { rows } = await db.query(text, values);

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
 import {
-  createVariant,
-  deleteVariant,
-  getVariants,
-  updateVariant,
+  createVariantSize,
+  deleteVariantSize,
+  getVariantsSizes,
+  updateVariantSize,
 } from '../controllers';
 import { variantExist } from '../helpers';
 import {
@@ -16,7 +16,7 @@ import {
 
 const router = Router();
 
-router.get('/', getVariants);
+router.get('/', getVariantsSizes);
 
 router.post(
   '/',
@@ -27,7 +27,7 @@ router.post(
     check('short', 'La abreviatura es obligatoria').not().isEmpty(),
     validateFields,
   ],
-  createVariant
+  createVariantSize
 );
 
 router.put(
@@ -40,7 +40,7 @@ router.put(
     check('short', 'La abreviatura es obligatoria').not().isEmpty(),
     validateFields,
   ],
-  updateVariant
+  updateVariantSize
 );
 
 router.delete(
@@ -51,7 +51,7 @@ router.delete(
     check('id').custom(variantExist),
     validateFields,
   ],
-  deleteVariant
+  deleteVariantSize
 );
 
 export default router;
