@@ -9,6 +9,7 @@ import {
   products,
   subcategories,
   users,
+  variants,
 } from '../routes';
 
 class Server {
@@ -23,6 +24,7 @@ class Server {
     products: '/api/products',
     subcategories: '/api/subcategories',
     users: '/api/users',
+    variants: '/api/variants',
   };
 
   constructor() {
@@ -56,6 +58,7 @@ class Server {
     this.app.use(this.endpoints.products, products);
     this.app.use(this.endpoints.subcategories, subcategories);
     this.app.use(this.endpoints.users, users);
+    this.app.use(this.endpoints.variants, variants);
   }
 
   listen() {

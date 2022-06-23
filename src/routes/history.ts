@@ -2,13 +2,24 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 import { createHistory, deleteHistory, getHistoryByUser } from '../controllers';
 import { validateFields, validateJWT, validateUser } from '../middlewares';
-import { historyExist, productExist, userExist } from '../helpers';
+import {
+  historyExist,
+  productExist,
+  sortQueryValidator,
+  userExist,
+} from '../helpers';
 
 const router = Router();
 
 router.get(
   '/:id',
-  [validateJWT, validateUser, check('id').custom(userExist), validateFields],
+  [
+    validateJWT,
+    validateUser,
+    check('sort').custom(sortQueryValidator),
+    check('id').custom(userExist),
+    validateFields,
+  ],
   getHistoryByUser
 );
 

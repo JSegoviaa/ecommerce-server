@@ -202,3 +202,17 @@ export const historyExist = async (id: number) => {
 
   return;
 };
+export const variantExist = async (id: number) => {
+  const text: string = `SELECT * FROM variants WHERE id = $1 LIMIT 1`;
+  const values = [id];
+
+  const variantExist = await db.query(text, values);
+
+  if (variantExist.rows.length === 0) {
+    throw new Error(`No existe una variante con ese id ${id}`);
+  }
+
+  if (variantExist) return;
+
+  return;
+};
