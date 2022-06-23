@@ -202,6 +202,7 @@ export const historyExist = async (id: number) => {
 
   return;
 };
+
 export const variantExist = async (id: number) => {
   const text: string = `SELECT * FROM variant_sizes WHERE id = $1 LIMIT 1`;
   const values = [id];
@@ -213,6 +214,66 @@ export const variantExist = async (id: number) => {
   }
 
   if (variantExist) return;
+
+  return;
+};
+
+export const variantSizeNameExist = async (name: number) => {
+  const text: string = `SELECT * FROM variant_sizes WHERE name = $1 LIMIT 1`;
+  const values = [name];
+
+  const variantSizeNameExist = await db.query(text, values);
+
+  if (variantSizeNameExist.rows.length === 0) return;
+
+  if (variantSizeNameExist) {
+    throw new Error('Ya existe un tamaño con ese nombre.');
+  }
+
+  return;
+};
+
+export const variantSizeShortExist = async (short: number) => {
+  const text: string = `SELECT * FROM variant_sizes WHERE short = $1 LIMIT 1`;
+  const values = [short];
+
+  const variantSizeShortExist = await db.query(text, values);
+
+  if (variantSizeShortExist.rows.length === 0) return;
+
+  if (variantSizeShortExist) {
+    throw new Error('Ya existe una abreviación con ese nombre.');
+  }
+
+  return;
+};
+
+export const variantColorExist = async (id: number) => {
+  const text: string = `SELECT * FROM variant_colors WHERE id = $1 LIMIT 1`;
+  const values = [id];
+
+  const variantColorExist = await db.query(text, values);
+
+  if (variantColorExist.rows.length === 0) {
+    throw new Error(`No existe un color con ese id ${id}`);
+  }
+
+  if (variantColorExist) return;
+
+  return;
+};
+
+export const variantColorNameExist = async (name: string) => {
+  const text: string = `SELECT * FROM variant_colors WHERE name = $1 LIMIT 1`;
+  const values = [name];
+
+  const variantColorNameExist = await db.query(text, values);
+
+  if (variantColorNameExist.rows.length === 0) return;
+
+  if (variantColorNameExist) {
+    throw new Error('Ya existe un color con ese nombre');
+  }
 
   return;
 };
