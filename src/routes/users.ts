@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validateFields';
 import {
+  countUsers,
   createUser,
   deactivateUser,
   deleteUser,
@@ -37,6 +38,12 @@ router.get(
     validateFields,
   ],
   getUsers
+);
+
+router.get(
+  '/count-users',
+  [validateJWT, hasRol('Super Administrador', 'Administrador'), validateFields],
+  countUsers
 );
 
 router.get(

@@ -40,6 +40,24 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+export const countUsers = async (req: Request, res: Response) => {
+  try {
+    const text: string =
+      'SELECT roles.role, COUNT(*) FROM users INNER JOIN roles ON users.role_id = roles.id GROUP BY roles.role ';
+    const { rows } = await db.query(text);
+
+    const userType = rows;
+    return res.status(200).json({ ok: true, msg: 'Tipo de usuario', userType });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de contar los usuarios.',
+      error,
+    });
+  }
+};
+
 export const getUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
