@@ -8,6 +8,7 @@ import {
   history,
   products,
   subcategories,
+  uploads,
   users,
   variants,
 } from '../routes';
@@ -23,6 +24,7 @@ class Server {
     history: '/api/history',
     products: '/api/products',
     subcategories: '/api/subcategories',
+    uploads: '/api/uploads',
     users: '/api/users',
     variants: '/api/variants',
   };
@@ -57,6 +59,7 @@ class Server {
     this.app.use(this.endpoints.history, history);
     this.app.use(this.endpoints.products, products);
     this.app.use(this.endpoints.subcategories, subcategories);
+    this.app.use(this.endpoints.uploads, uploads);
     this.app.use(this.endpoints.users, users);
     this.app.use(this.endpoints.variants, variants);
   }

@@ -54,24 +54,17 @@ export const getCategory = async (req: Request, res: Response) => {
 };
 
 export const createCategory = async (req: Request, res: Response) => {
-  const { title, img = '', created_by, updated_by } = req.body;
+  const { title, created_by, updated_by } = req.body;
   const date = moment().format();
   const slug = slugify(title);
   const newSlug = await slugExist(slug, 'categories');
+
   try {
-    // const url = req.file?.path;
-
-    // const textImg: string = `INSERT INTO images(url) VALUES($1) RETURNING *`;
-    // const valuesImg = [url];
-
-    // const images = await db.query(textImg, valuesImg);
-
     const text: string =
-      'INSERT INTO categories(title, img, slug, is_active, is_published, created_by, updated_by, created_at, updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *';
+      'INSERT INTO categories(title, slug, is_active, is_published, created_by, updated_by, created_at, updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *';
 
     const values: string[] = [
       title,
-      img,
       newSlug,
       true,
       false,
@@ -98,7 +91,7 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const updateCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { title, img, is_active, updated_by, is_published } = req.body;
+  const { title, image_id, is_active, updated_by, is_published } = req.body;
   const date = moment().format();
   const slug = slugify(title);
   const newSlug = await slugExist(slug, 'categories');
@@ -110,21 +103,21 @@ export const updateCategory = async (req: Request, res: Response) => {
     SET 
       title = $1,
       slug = $2,
-      img = $3,
-      is_active = $4,
-      is_published = $5,
-      updated_by = $6,
-      updated_at = $7
+      is_active = $3,
+      is_published = $4,
+      updated_by = $5,
+      updated_at = $6
+      image_id = $7
     WHERE id = $8 RETURNING *
       `;
     const values = [
       title,
       newSlug,
-      img,
       is_active,
       is_published,
       updated_by,
       date,
+      image_id,
       id,
     ];
     const { rows } = await db.query(text, values);

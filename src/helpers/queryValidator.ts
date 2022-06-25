@@ -39,6 +39,8 @@ type OrderByCode =
   | 'expires_at'
   | 'is_active';
 
+type Upload = 'categories' | 'subcategories' | 'products';
+
 export const sortQueryValidator = (query: SortQuery) => {
   switch (query) {
     case 'ASC':
@@ -147,5 +149,19 @@ export const codesQueryValidator = (query: OrderByCode) => {
 
     default:
       throw new Error(`${query} no es una forma de ordenamiento válida.`);
+  }
+};
+
+export const uploadTypeQueryValidator = (query: Upload) => {
+  switch (query) {
+    case 'categories':
+      return query;
+    case 'subcategories':
+      return query;
+    case 'products':
+      return query;
+
+    default:
+      throw new Error(`${query} no es un parámetro permitido.`);
   }
 };

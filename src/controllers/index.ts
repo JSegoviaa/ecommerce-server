@@ -5,5 +5,6 @@ export * from './discountCode';
 export * from './history';
 export * from './products';
 export * from './subcategories';
+export * from './uploads';
 export * from './users';
 export * from './variants';
