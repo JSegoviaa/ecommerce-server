@@ -187,6 +187,28 @@ export const slugExist = async (slug: string, category: DB) => {
     return newSlug + '-' + randomSlugId;
   }
 };
+export const slugExists = async (slug: string, category: DB) => {
+  const query = `SELECT * FROM ${category} WHERE slug = $1`;
+  const values = [slug];
+
+  const slugExist = await db.query(query, values);
+
+  if (slugExist.rows.length === 0) {
+    switch (category) {
+      case 'categories':
+        throw new Error('No existe una categoría con ese url.');
+      case 'subcategories':
+        throw new Error('No existe una subcategoría con ese url.');
+      case 'products':
+        throw new Error('No existe un producto con ese url.');
+
+      default:
+        return;
+    }
+  }
+
+  if (slugExist) return;
+};
 
 export const historyExist = async (id: number) => {
   const text: string = `SELECT * FROM history WHERE id = $1 LIMIT 1`;

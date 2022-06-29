@@ -6,6 +6,7 @@ import {
   deleteSubcategory,
   getSubcategories,
   getSubcategory,
+  getSubcategoryBySlug,
   updateSubategory,
 } from '../controllers';
 import {
@@ -14,6 +15,7 @@ import {
   categoryExist,
   sortQueryValidator,
   categoryQueryValidator,
+  slugExists,
 } from '../helpers';
 import {
   hasRol,
@@ -38,6 +40,15 @@ router.get(
   '/:id',
   [check('id').custom(subcategoryExist), validateFields],
   getSubcategory
+);
+
+router.get(
+  '/find/:slug',
+  [
+    check('slug').custom((slug) => slugExists(slug, 'subcategories')),
+    validateFields,
+  ],
+  getSubcategoryBySlug
 );
 
 router.post(

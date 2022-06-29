@@ -6,11 +6,13 @@ import {
   deleteCategory,
   getCategories,
   getCategory,
+  getCategoryBySlug,
   updateCategory,
 } from '../controllers';
 import {
   categoryExist,
   categoryQueryValidator,
+  slugExists,
   sortQueryValidator,
   userExist,
 } from '../helpers';
@@ -37,6 +39,15 @@ router.get(
   '/:id',
   [check('id').custom(categoryExist), validateFields],
   getCategory
+);
+
+router.get(
+  '/find/:slug',
+  [
+    check('slug').custom((slug) => slugExists(slug, 'categories')),
+    validateFields,
+  ],
+  getCategoryBySlug
 );
 
 router.post(

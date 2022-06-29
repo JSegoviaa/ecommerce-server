@@ -53,6 +53,25 @@ export const getCategory = async (req: Request, res: Response) => {
   }
 };
 
+export const getCategoryBySlug = async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  try {
+    const text: string = `SELECT * FROM categories WHERE slug = $1 LIMIT 1`;
+    const values = [slug];
+
+    const { rows } = await db.query(text, values);
+    const category = rows[0];
+
+    return res.status(200).json({ ok: true, msg: 'Categoría', category, slug });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de obtener categoría.',
+    });
+  }
+};
+
 export const createCategory = async (req: Request, res: Response) => {
   const { title, created_by, updated_by } = req.body;
   const date = moment().format();

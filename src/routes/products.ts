@@ -6,10 +6,12 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductBySlug,
 } from '../controllers/';
 import {
   productExist,
   productQueryValidator,
+  slugExists,
   sortQueryValidator,
   userExist,
   variantColorExist,
@@ -33,6 +35,14 @@ router.get(
   '/:id',
   [check('id').custom(productExist), validateFields],
   getProduct
+);
+router.get(
+  '/find/:slug',
+  [
+    check('slug').custom((slug) => slugExists(slug, 'products')),
+    validateFields,
+  ],
+  getProductBySlug
 );
 
 router.post(

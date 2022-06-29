@@ -52,6 +52,25 @@ export const getSubcategory = async (req: Request, res: Response) => {
   }
 };
 
+export const getSubcategoryBySlug = async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  try {
+    const text: string = `SELECT * FROM subcategories WHERE slug = $1 LIMIT 1`;
+    const values = [slug];
+
+    const { rows } = await db.query(text, values);
+    const category = rows[0];
+
+    return res.status(200).json({ ok: true, msg: 'Categoría', category });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de obtener subcategoría.',
+    });
+  }
+};
+
 export const createSubategory = async (req: Request, res: Response) => {
   const { title, img = '', created_by, updated_by, category_id } = req.body;
 

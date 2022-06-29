@@ -116,6 +116,73 @@ export const getProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductBySlug = async (req: Request, res: Response) => {
+  const { slug } = req.params;
+
+  try {
+    const textProduct: string = `
+    SELECT 
+      p.id, 
+      p.is_published, 
+      p.discount, 
+      p.description, 
+      p.title, 
+      p.is_active, 
+      p.created_at, 
+      p.created_by, 
+      p.updated_at, 
+      p.updated_by,
+      p.slug
+    FROM products p
+    WHERE p.slug = $1`;
+    const valuesProduct: string[] = [slug];
+
+    const textVariant: string = `
+    SELECT
+      products_variants.id, price, grams, mililiters, length, width, height, diameter,
+      vs.name, short,
+      vc.name,
+      p.slug
+      FROM products_variants
+      INNER JOIN variant_options vo ON products_variants.variant_option_id = vo.id
+      INNER JOIN variant_sizes vs ON vo.variant_size_id = vs.id
+      INNER JOIN variant_colors vc ON vo.variant_color_id = vc.id
+      INNER JOIN products p on products_variants.product_id = p.id
+      WHERE p.slug = $1`;
+    const valuesVariants: string[] = [slug];
+
+    const textImgs: string = `
+    SELECT 
+      pi.id, 
+      url 
+    FROM products_images pi
+    INNER JOIN images i ON i.id = pi.image_id
+    INNER JOIN products p ON pi.product_id = p.id
+    WHERE p.slug = $1`;
+    const valuesImgs: string[] = [slug];
+
+    const [product, variants, images] = await Promise.all([
+      await db.query(textProduct, valuesProduct),
+      await db.query(textVariant, valuesVariants),
+      await db.query(textImgs, valuesImgs),
+    ]);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Producto obtenido correctamente.',
+      product: product.rows[0],
+      variants: variants.rows,
+      images: images.rows,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de obtener producto.',
+    });
+  }
+};
+
 export const createProduct = async (req: Request, res: Response) => {
   const {
     title,
