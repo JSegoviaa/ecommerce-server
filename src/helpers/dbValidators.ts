@@ -210,7 +210,7 @@ export const variantExist = async (id: number) => {
   const variantExist = await db.query(text, values);
 
   if (variantExist.rows.length === 0) {
-    throw new Error(`No existe una variante con ese id ${id}`);
+    throw new Error(`No existe un tamaño con el id ${id}`);
   }
 
   if (variantExist) return;
@@ -255,7 +255,7 @@ export const variantColorExist = async (id: number) => {
   const variantColorExist = await db.query(text, values);
 
   if (variantColorExist.rows.length === 0) {
-    throw new Error(`No existe un color con ese id ${id}`);
+    throw new Error(`No existe un color con el id ${id}`);
   }
 
   if (variantColorExist) return;
