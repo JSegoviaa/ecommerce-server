@@ -10,8 +10,42 @@ import {
 } from '../interfaces';
 
 export const getProducts = async (req: Request, res: Response) => {
+  const {
+    limit = 20,
+    sort = 'ASC',
+    from = 0,
+    is_active = true,
+    order_by = 'id',
+  } = req.query;
+
   try {
-    return res.status(200).json({ ok: true, msg: 'Lista de productos' });
+    const text: string = `
+    SELECT 
+      products.id, 
+      title, 
+      slug, 
+      url 
+    FROM 
+      products 
+    INNER JOIN images ON products.image_id = images.id 
+    WHERE is_active = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3
+    `;
+    const values = [is_active, from, limit];
+
+    const count: string = `SELECT COUNT(*) FROM  products WHERE is_active = $1`;
+    const countValues = [is_active];
+
+    const [products, total] = await Promise.all([
+      await db.query(text, values),
+      await db.query(count, countValues),
+    ]);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Lista de productos.',
+      total: total.rows[0].count,
+      products: products.rows,
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });
@@ -22,10 +56,63 @@ export const getProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    return res.status(200).json({ ok: true, msg: 'Producto', id });
+    const textProduct: string = `
+    SELECT 
+      p.id, 
+      p.is_published, 
+      p.discount, 
+      p.description, 
+      p.title, 
+      p.is_active, 
+      p.created_at, 
+      p.created_by, 
+      p.updated_at, 
+      p.updated_by
+    FROM products p
+    WHERE p.id = $1`;
+    const valuesProduct: string[] = [id];
+
+    const textVariant: string = `
+    SELECT
+      products_variants.id, price, grams, mililiters, length, width, height, diameter,
+      vs.name, short,
+      vc.name
+      FROM products_variants
+      INNER JOIN variant_options vo ON products_variants.variant_option_id = vo.id
+      INNER JOIN variant_sizes vs ON vo.variant_size_id = vs.id
+      INNER JOIN variant_colors vc ON vo.variant_color_id = vc.id
+      WHERE product_id = $1`;
+    const valuesVariants: string[] = [id];
+
+    const textImgs: string = `
+    SELECT 
+      pi.id, 
+      url 
+    FROM products_images pi
+    INNER JOIN images i on i.id = pi.image_id
+    WHERE product_id = $1`;
+    const valuesImgs: string[] = [id];
+
+    const [product, variants, images] = await Promise.all([
+      await db.query(textProduct, valuesProduct),
+      await db.query(textVariant, valuesVariants),
+      await db.query(textImgs, valuesImgs),
+    ]);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Producto obtenido correctamente.',
+      product: product.rows[0],
+      variants: variants.rows,
+      images: images.rows,
+    });
   } catch (error) {
     console.log({ error });
-    return res.status(500).json({ ok: false, msg: 'Error', error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de obtener un producto.',
+      error,
+    });
   }
 };
 

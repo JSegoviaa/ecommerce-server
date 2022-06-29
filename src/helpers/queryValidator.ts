@@ -16,7 +16,16 @@ type OrderByCategory =
   | 'created_at'
   | 'updated_at';
 
-type OrderByProduct = 'id';
+type OrderByProduct =
+  | 'id'
+  | 'title'
+  | 'discount'
+  | 'is_published'
+  | 'is_active'
+  | 'created_by'
+  | 'updated_by'
+  | 'created_at'
+  | 'updated_at';
 
 type OrderByAddress =
   | 'id'
@@ -95,7 +104,23 @@ export const categoryQueryValidator = (query: OrderByCategory) => {
 export const productQueryValidator = (query: OrderByProduct) => {
   switch (query) {
     case 'id':
-      break;
+      return query;
+    case 'created_at':
+      return query;
+    case 'created_by':
+      return query;
+    case 'discount':
+      return query;
+    case 'is_active':
+      return query;
+    case 'is_published':
+      return query;
+    case 'title':
+      return query;
+    case 'updated_at':
+      return query;
+    case 'updated_by':
+      return query;
 
     default:
       throw new Error(`${query} no es una forma de ordenamiento válida.`);
