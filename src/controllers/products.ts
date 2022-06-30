@@ -289,7 +289,18 @@ export const deleteProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    return res.status(200).json({ ok: true, msg: 'Eliminar producto', id });
+    const text: string = 'DELETE FROM products WHERE id = $1 RETURNING*';
+    const values: string[] = [id];
+
+    const { rows } = await db.query(text, values);
+
+    const deletedProduct = rows[0];
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Producto eliminado correctamente.',
+      deletedProduct,
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });

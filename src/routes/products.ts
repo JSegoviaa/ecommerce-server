@@ -17,7 +17,12 @@ import {
   variantColorExist,
   variantExist,
 } from '../helpers';
-import { hasRol, validateFields, validateJWT } from '../middlewares';
+import {
+  hasRol,
+  superAdminRol,
+  validateFields,
+  validateJWT,
+} from '../middlewares';
 
 const router = Router();
 
@@ -99,8 +104,17 @@ router.post(
   createProduct
 );
 
-router.put('/:id', updateProduct);
+router.put('/:id', [validateFields], updateProduct);
 
-router.delete('/:id', deleteProduct);
+router.delete(
+  '/:id',
+  [
+    validateJWT,
+    superAdminRol,
+    check('id').custom(productExist),
+    validateFields,
+  ],
+  deleteProduct
+);
 
 export default router;
