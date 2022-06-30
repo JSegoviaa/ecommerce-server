@@ -285,6 +285,33 @@ export const updateProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const deactivateProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { is_active, updated_by } = req.body;
+  const date = moment().format();
+  try {
+    const text: string =
+      'UPDATE products SET is_active = $1, updated_by = $2, updated_at = $3 WHERE id = $4 RETURNING*';
+    const values = [is_active, updated_by, date, id];
+
+    const { rows } = await db.query(text, values);
+    const deactivatedProduct = rows[0];
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'El producto se ha desactivado correctamente.',
+      deactivatedProduct,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de desactivar el producto.',
+      error,
+    });
+  }
+};
+
 export const deleteProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
 

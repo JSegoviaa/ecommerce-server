@@ -7,6 +7,7 @@ import {
   updateProduct,
   deleteProduct,
   getProductBySlug,
+  deactivateProduct,
 } from '../controllers/';
 import {
   productExist,
@@ -105,6 +106,30 @@ router.post(
 );
 
 router.put('/:id', [validateFields], updateProduct);
+
+router.put(
+  '/deactivate-product/:id',
+  [
+    validateJWT,
+    superAdminRol,
+    check('id').custom(productExist),
+    check('updated_by').custom(userExist),
+    check(
+      'updated_by',
+      'El id del usuario que desactiva el producto tiene que ser un número entero.'
+    ).isInt({ min: 1 }),
+    check('updated_by', 'El usuario que desactiva el producto es obligatorio.')
+      .not()
+      .isEmpty(),
+    check('is_active', 'El valor is_active es obligatorio.').not().isEmpty(),
+    check(
+      'is_active',
+      'Tiene que ser un valor de verdadero o falso'
+    ).isBoolean(),
+    validateFields,
+  ],
+  deactivateProduct
+);
 
 router.delete(
   '/:id',
