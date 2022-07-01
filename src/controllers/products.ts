@@ -276,9 +276,25 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { images } = req.body;
+  let productImages = [];
 
   try {
-    return res.status(200).json({ ok: true, msg: 'Actualizar producto', id });
+    for (let i = 0; i < images.length; i++) {
+      const textImgs =
+        'INSERT INTO products_images(product_id, image_id) VALUES($1,$2) RETURNING*';
+      const valuesImgs = [id, images[i].id];
+      const { rows } = await db.query(textImgs, valuesImgs);
+      productImages.push(rows[0]);
+    }
+
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        msg: 'Producto actualizado correctamente',
+        productImages,
+      });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });

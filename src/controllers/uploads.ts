@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { v2 } from 'cloudinary';
+// import { v2 } from 'cloudinary';
 import { db } from '../db';
 import { UploadedPictures } from '../interfaces';
 
+//TODO Revisar flujo de eliminación de imágenes cuando se tenga el front.
 export const uploadPicture = async (req: Request, res: Response) => {
   const url = req.file?.path;
   try {

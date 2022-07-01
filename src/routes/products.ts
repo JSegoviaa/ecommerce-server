@@ -105,7 +105,11 @@ router.post(
   createProduct
 );
 
-router.put('/:id', [validateFields], updateProduct);
+router.put(
+  '/:id',
+  [check('id').custom(productExist), validateFields],
+  updateProduct
+);
 
 router.put(
   '/deactivate-product/:id',
