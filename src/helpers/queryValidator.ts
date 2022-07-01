@@ -48,6 +48,8 @@ type OrderByCode =
   | 'expires_at'
   | 'is_active';
 
+type OrderByFavorites = 'id' | 'title' | 'created_at';
+
 type Upload = 'categories' | 'subcategories' | 'products';
 
 export const sortQueryValidator = (query: SortQuery) => {
@@ -184,6 +186,19 @@ export const uploadTypeQueryValidator = (query: Upload) => {
     case 'subcategories':
       return query;
     case 'products':
+      return query;
+
+    default:
+      throw new Error(`${query} no es un parámetro permitido.`);
+  }
+};
+export const favoritesQueryValidator = (query: OrderByFavorites) => {
+  switch (query) {
+    case 'created_at':
+      return query;
+    case 'id':
+      return query;
+    case 'title':
       return query;
 
     default:

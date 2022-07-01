@@ -299,3 +299,16 @@ export const variantColorNameExist = async (name: string) => {
 
   return;
 };
+
+export const favoriteExist = async (id: string) => {
+  const text: string = 'SELECT * FROM favorites WHERE id = $1';
+  const values = [id];
+
+  const favoriteExits = await db.query(text, values);
+
+  if (favoriteExits.rows.length === 0) {
+    throw new Error(`No existe un favorito con el id ${id}.`);
+  }
+
+  if (favoriteExits) return;
+};

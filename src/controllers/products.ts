@@ -227,9 +227,9 @@ export const createProduct = async (req: Request, res: Response) => {
 
     for (let i = 0; i < variant_options.length; i++) {
       const text: string = `
-      INSERT INTO 
-        variant_options(price, grams, mililiters, length, width, height, diameter, variant_size_id, variant_color_id) 
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) 
+      INSERT INTO
+        variant_options(price, grams, mililiters, length, width, height, diameter, variant_size_id, variant_color_id)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
       RETURNING*`;
 
       const values = [
@@ -249,6 +249,30 @@ export const createProduct = async (req: Request, res: Response) => {
       variants.push(rows[0]);
     }
 
+    // const variantes: ProductVariant[] = await Promise.all(
+    //   variant_options.map(async (variant) => {
+    //     const text: string = `
+    //     INSERT INTO
+    //       variant_options(price, grams, mililiters, length, width, height, diameter, variant_size_id, variant_color_id)
+    //     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
+    //     RETURNING*`;
+    //     const values = [
+    //       variant.price,
+    //       variant.grams,
+    //       variant.mililiters,
+    //       variant.length,
+    //       variant.width,
+    //       variant.height,
+    //       variant.diameter,
+    //       variant.variant_size_id,
+    //       variant.variant_color_id,
+    //     ];
+    //     const { rows } = await db.query(text, values);
+
+    //     return rows[0];
+    //   })
+    // );
+
     for (let i = 0; i < variants.length; i++) {
       const text: string = `INSERT INTO products_variants(product_id, variant_option_id) VALUES($1,$2) RETURNING*`;
       const values = [productCreated.id, variants[i].id];
@@ -263,6 +287,7 @@ export const createProduct = async (req: Request, res: Response) => {
       msg: 'Se ha creado el producto exitosamente.',
       productCreated,
       variants,
+      // variantes,
     });
   } catch (error) {
     console.log({ error });
@@ -288,13 +313,11 @@ export const updateProduct = async (req: Request, res: Response) => {
       productImages.push(rows[0]);
     }
 
-    return res
-      .status(200)
-      .json({
-        ok: true,
-        msg: 'Producto actualizado correctamente',
-        productImages,
-      });
+    return res.status(200).json({
+      ok: true,
+      msg: 'Producto actualizado correctamente',
+      productImages,
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });
