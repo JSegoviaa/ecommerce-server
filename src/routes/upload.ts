@@ -3,7 +3,12 @@ import { check } from 'express-validator';
 import { v2 } from 'cloudinary';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { uploadPicture, uploadPictures } from '../controllers';
+import {
+  deletePictureFromCategory,
+  deletePictures,
+  uploadPicture,
+  uploadPictures,
+} from '../controllers';
 import {
   categoryExist,
   subcategoryExist,
@@ -25,7 +30,7 @@ const storage = new CloudinaryStorage({
 
     return {
       folder: `ecommerce/${type}/${id}`,
-      public_id: file.originalname,
+      public_id: `${type}_${id}`,
     };
   },
 });
@@ -62,5 +67,13 @@ router.post(
   [check('type').custom(uploadTypeQueryValidator), uploads, validateFields],
   uploadPictures
 );
+
+router.delete(
+  '/category/:id',
+  [check('id').custom(categoryExist), validateFields],
+  deletePictureFromCategory
+);
+
+router.delete('/delete-pictures/:id', [], deletePictures);
 
 export default router;

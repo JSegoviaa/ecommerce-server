@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { v2 } from 'cloudinary';
 import { db } from '../db';
 import { UploadedPictures } from '../interfaces';
 
@@ -51,6 +52,59 @@ export const uploadPictures = async (req: Request, res: Response) => {
       ok: false,
       msg: 'Error en el servidor al momento de subir imágenes.',
       error,
+    });
+  }
+};
+
+//TODO Revisar la eliminación de imágenes. La imagen se reemplaza no agrega a la db.
+export const deletePictureFromCategory = async (
+  req: Request,
+  res: Response
+) => {
+  const { id } = req.params;
+  try {
+    const textType = `SELECT image_id FROM categories WHERE id = $1`;
+    const valuesType = [id];
+
+    const { rows } = await db.query(textType, valuesType);
+
+    const { image_id } = rows[0];
+
+    const text: string = 'DELETE FROM images WHERE id = $1 RETURNING*';
+    const values: string[] = [image_id];
+
+    const deletedImg = await db.query(text, values);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'La imagen se ha eliminado correctamente.',
+      deletedImg: deletedImg.rows[0].url,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de eliminar la imagen.',
+      error,
+    });
+  }
+};
+
+export const deletePictures = async (req: Request, res: Response) => {
+  try {
+    const text: string = 'DELETE FROM images WHERE id = $1 RETURNING*';
+    const values = [1];
+
+    const { rows } = await db.query(text, values);
+
+    return res
+      .status(200)
+      .json({ ok: true, msg: 'Imágenes eliminadas correctamente', rows });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de eliminar las imágenes.',
     });
   }
 };
