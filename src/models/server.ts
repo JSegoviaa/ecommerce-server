@@ -7,6 +7,7 @@ import {
   discountCode,
   history,
   products,
+  ratings,
   subcategories,
   uploads,
   users,
@@ -23,6 +24,7 @@ class Server {
     discountCode: '/api/discount-codes',
     history: '/api/history',
     products: '/api/products',
+    ratings: '/api/ratings',
     subcategories: '/api/subcategories',
     uploads: '/api/uploads',
     users: '/api/users',
@@ -58,6 +60,7 @@ class Server {
     this.app.use(this.endpoints.discountCode, discountCode);
     this.app.use(this.endpoints.history, history);
     this.app.use(this.endpoints.products, products);
+    this.app.use(this.endpoints.ratings, ratings);
     this.app.use(this.endpoints.subcategories, subcategories);
     this.app.use(this.endpoints.uploads, uploads);
     this.app.use(this.endpoints.users, users);

@@ -4,6 +4,7 @@ export { default as categories } from './categories';
 export { default as discountCode } from './discountCode';
 export { default as history } from './history';
 export { default as products } from './products';
+export { default as ratings } from './ratings';
 export { default as subcategories } from './subcategories';
 export { default as uploads } from './upload';
 export { default as users } from './users';

@@ -4,6 +4,7 @@ export * from './categories';
 export * from './discountCode';
 export * from './history';
 export * from './products';
+export * from './ratings';
 export * from './subcategories';
 export * from './uploads';
 export * from './users';
