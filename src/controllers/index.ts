@@ -9,3 +9,4 @@ export * from './subcategories';
 export * from './uploads';
 export * from './users';
 export * from './variants';
+export * from './favorites';
