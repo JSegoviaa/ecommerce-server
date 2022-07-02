@@ -52,6 +52,14 @@ type OrderByFavorites = 'id' | 'title' | 'created_at';
 
 type Upload = 'categories' | 'subcategories' | 'products';
 
+type OrderByComments =
+  | 'id'
+  | 'created_at'
+  | 'title'
+  | 'user_id'
+  | 'product_id'
+  | 'comment';
+
 export const sortQueryValidator = (query: SortQuery) => {
   switch (query) {
     case 'ASC':
@@ -192,6 +200,7 @@ export const uploadTypeQueryValidator = (query: Upload) => {
       throw new Error(`${query} no es un parámetro permitido.`);
   }
 };
+
 export const favoritesQueryValidator = (query: OrderByFavorites) => {
   switch (query) {
     case 'created_at':
@@ -199,6 +208,28 @@ export const favoritesQueryValidator = (query: OrderByFavorites) => {
     case 'id':
       return query;
     case 'title':
+      return query;
+
+    default:
+      throw new Error(`${query} no es un parámetro permitido.`);
+  }
+};
+
+export const commentsQueryValidator = (query: OrderByComments) => {
+  switch (query) {
+    case 'created_at':
+      return query;
+    case 'id':
+      return query;
+    case 'title':
+      return query;
+    case 'comment':
+      return query;
+    case 'created_at':
+      return query;
+    case 'product_id':
+      return query;
+    case 'user_id':
       return query;
 
     default:

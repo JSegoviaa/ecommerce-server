@@ -3,10 +3,24 @@ import moment from 'moment';
 import { db } from '../db';
 
 export const getAllComments = async (req: Request, res: Response) => {
+  const {
+    limit = 20,
+    sort = 'ASC',
+    from = 0,
+    order_by = 'created_at',
+  } = req.query;
+
   try {
-    return res
-      .status(201)
-      .json({ ok: true, msg: 'Lista de todos los comentarios del producto.' });
+    const text: string = `SELECT * FROM comments ORDER BY ${order_by} ${sort} OFFSET $1 LIMIT $2`;
+    const values = [from, limit];
+
+    const { rows } = await db.query(text, values);
+
+    return res.status(201).json({
+      ok: true,
+      msg: 'Lista de todos los comentarios del producto.',
+      allComments: rows,
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
@@ -22,7 +36,7 @@ export const getCommentsByProduct = async (req: Request, res: Response) => {
   const { limit = 20, sort = 'ASC', from = 0 } = req.query;
 
   try {
-    const text: string = `SELECT * FROM comments WHERE product_id = $1 ORDER BY id ${sort} OFFSET $2 LIMIT $3`;
+    const text: string = `SELECT * FROM comments WHERE product_id = $1 ORDER BY created_at ${sort} OFFSET $2 LIMIT $3`;
     const values = [id, from, limit];
 
     const { rows } = await db.query(text, values);

@@ -5,12 +5,32 @@ import {
   getAllComments,
   getCommentsByProduct,
 } from '../controllers';
-import { productExist, sortQueryValidator, userExist } from '../helpers';
-import { validateFields, validateJWT, validateUser } from '../middlewares';
+import {
+  commentsQueryValidator,
+  productExist,
+  sortQueryValidator,
+  userExist,
+} from '../helpers';
+import {
+  hasRol,
+  validateFields,
+  validateJWT,
+  validateUser,
+} from '../middlewares';
 
 const router = Router();
 
-router.get('/', [], getAllComments);
+router.get(
+  '/',
+  [
+    validateJWT,
+    hasRol('Super Administrador', 'Administrador'),
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(commentsQueryValidator),
+    validateFields,
+  ],
+  getAllComments
+);
 
 router.get(
   '/:id',
