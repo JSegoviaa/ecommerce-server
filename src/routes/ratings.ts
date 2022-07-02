@@ -1,12 +1,18 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { getRateByProduct, rateProduct } from '../controllers';
+import { getAvgRateByProduct, rateProduct } from '../controllers';
 import { productExist, userExist } from '../helpers';
 import { validateFields, validateJWT, validateUser } from '../middlewares';
 
 const router = Router();
 
-router.get('/:id', [], getRateByProduct);
+//TODO Crear las demás rutas
+
+router.get(
+  '/:id',
+  [check('id').custom(productExist), validateFields],
+  getAvgRateByProduct
+);
 
 router.post(
   '/',

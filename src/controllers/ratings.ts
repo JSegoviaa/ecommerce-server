@@ -2,11 +2,23 @@ import { Request, Response } from 'express';
 import moment from 'moment';
 import { db } from '../db';
 
-export const getRateByProduct = async (req: Request, res: Response) => {
+export const getAvgRateByProduct = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
   try {
-    return res
-      .status(200)
-      .json({ ok: true, msg: 'Calificación de productos.' });
+    const text: string =
+      'SELECT AVG (rating) FROM ratings WHERE product_id = $1';
+    const values = [id];
+
+    const { rows } = await db.query(text, values);
+
+    const { avg } = rows[0];
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Calificación de productos.',
+      productRate: !avg ? 0 : Number(avg),
+    });
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
