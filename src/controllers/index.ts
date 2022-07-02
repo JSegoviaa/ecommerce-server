@@ -1,7 +1,9 @@
 export * from './addresses';
 export * from './auth';
 export * from './categories';
+export * from './comments';
 export * from './discountCode';
+export * from './favorites';
 export * from './history';
 export * from './products';
 export * from './ratings';
@@ -9,4 +11,3 @@ export * from './subcategories';
 export * from './uploads';
 export * from './users';
 export * from './variants';
-export * from './favorites';

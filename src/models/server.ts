@@ -4,6 +4,7 @@ import {
   addresses,
   auth,
   categories,
+  comments,
   discountCode,
   favorites,
   history,
@@ -22,6 +23,7 @@ class Server {
     addresses: '/api/addresses',
     auth: '/api/auth',
     categories: '/api/categories',
+    comments: '/api/comments',
     discountCode: '/api/discount-codes',
     favorites: '/api/favorites',
     history: '/api/history',
@@ -59,6 +61,7 @@ class Server {
     this.app.use(this.endpoints.addresses, addresses);
     this.app.use(this.endpoints.auth, auth);
     this.app.use(this.endpoints.categories, categories);
+    this.app.use(this.endpoints.comments, comments);
     this.app.use(this.endpoints.discountCode, discountCode);
     this.app.use(this.endpoints.favorites, favorites);
     this.app.use(this.endpoints.history, history);

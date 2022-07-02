@@ -1,6 +1,7 @@
 export { default as addresses } from './addresses';
 export { default as auth } from './auth';
 export { default as categories } from './categories';
+export { default as comments } from './comments';
 export { default as discountCode } from './discountCode';
 export { default as favorites } from './favorites';
 export { default as history } from './history';
