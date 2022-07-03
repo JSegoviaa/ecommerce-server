@@ -60,6 +60,10 @@ type OrderByComments =
   | 'product_id'
   | 'comment';
 
+type OrderUsersRating = 'id' | 'rating' | 'created_at' | 'title';
+
+type OrderAvgProduct = 'id' | 'title';
+
 export const sortQueryValidator = (query: SortQuery) => {
   switch (query) {
     case 'ASC':
@@ -230,6 +234,34 @@ export const commentsQueryValidator = (query: OrderByComments) => {
     case 'product_id':
       return query;
     case 'user_id':
+      return query;
+
+    default:
+      throw new Error(`${query} no es un parámetro permitido.`);
+  }
+};
+
+export const usersRatingsQueryValidator = (query: OrderUsersRating) => {
+  switch (query) {
+    case 'created_at':
+      return query;
+    case 'id':
+      return query;
+    case 'title':
+      return query;
+    case 'rating':
+      return query;
+
+    default:
+      throw new Error(`${query} no es un parámetro permitido.`);
+  }
+};
+
+export const productsAvgQueryValidator = (query: OrderAvgProduct) => {
+  switch (query) {
+    case 'id':
+      return query;
+    case 'title':
       return query;
 
     default:

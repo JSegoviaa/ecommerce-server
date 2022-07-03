@@ -28,6 +28,85 @@ export const getAvgRateByProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getUsersRates = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { limit = 20, sort = 'ASC', from = 0, order_by = 'id' } = req.query;
+
+  try {
+    const text: string = `
+    SELECT 
+      r.id,
+      r.rating,
+      r.created_at,
+      p.title,
+      p.slug,
+      i.url
+    FROM 
+      ratings r 
+    INNER JOIN products p ON r.product_id = p.id
+    INNER JOIN images i ON p.image_id = i.id  
+    WHERE user_id = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3
+    `;
+    const values = [id, from, limit];
+
+    const { rows } = await db.query(text, values);
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ ok: false, msg: 'No has calificado ningún producto.' });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Se ha obtenido tu lista de calificaciones a los productos.',
+      usersRating: rows,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de obtener calificaciones del usuario.',
+    });
+  }
+};
+
+export const getAllAvgRatings = async (req: Request, res: Response) => {
+  const { limit = 20, sort = 'ASC', from = 0, order_by = 'id' } = req.query;
+
+  try {
+    const text: string = `
+    SELECT 
+      r.product_id id, 
+      p.title, 
+      p.slug, 
+      AVG(rating) 
+    FROM ratings r
+    INNER JOIN products p ON r.product_id = p.id 
+    GROUP BY r.product_id, p.title, p.slug
+    ORDER BY ${order_by} ${sort} OFFSET $1 LIMIT $2
+    `;
+    const values = [from, limit];
+
+    const { rows } = await db.query(text, values);
+
+    return res
+      .status(200)
+      .json({
+        ok: true,
+        msg: 'Lista de calificaciones.',
+        productsRateAvg: rows,
+      });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de obtener las calificaciones de los productos.',
+      error,
+    });
+  }
+};
+
 export const rateProduct = async (req: Request, res: Response) => {
   const { rating, user_id, product_id } = req.body;
   const date = moment().format();

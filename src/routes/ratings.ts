@@ -1,17 +1,56 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { getAvgRateByProduct, rateProduct } from '../controllers';
-import { productExist, userExist } from '../helpers';
-import { validateFields, validateJWT, validateUser } from '../middlewares';
+import {
+  getAllAvgRatings,
+  getAvgRateByProduct,
+  getUsersRates,
+  rateProduct,
+} from '../controllers';
+import {
+  productExist,
+  productsAvgQueryValidator,
+  sortQueryValidator,
+  userExist,
+  usersRatingsQueryValidator,
+} from '../helpers';
+import {
+  hasRol,
+  validateFields,
+  validateJWT,
+  validateUser,
+} from '../middlewares';
 
 const router = Router();
-
-//TODO Crear las demás rutas
 
 router.get(
   '/:id',
   [check('id').custom(productExist), validateFields],
   getAvgRateByProduct
+);
+
+router.get(
+  '/users-rate/:id',
+  [
+    validateJWT,
+    validateUser,
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(usersRatingsQueryValidator),
+    check('id').custom(userExist),
+    validateFields,
+  ],
+  getUsersRates
+);
+
+router.get(
+  '/all/products-rate',
+  [
+    validateJWT,
+    hasRol('Super Administrador', 'Administrador'),
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(productsAvgQueryValidator),
+    validateFields,
+  ],
+  getAllAvgRatings
 );
 
 router.post(
