@@ -4,6 +4,7 @@ import {
   createComment,
   getAllComments,
   getCommentsByProduct,
+  getUsersComments,
 } from '../controllers';
 import {
   commentsQueryValidator,
@@ -36,6 +37,17 @@ router.get(
   '/:id',
   [check('sort').custom(sortQueryValidator), validateFields],
   getCommentsByProduct
+);
+
+router.get(
+  '/users-comments/:id',
+  [
+    validateJWT,
+    validateUser,
+    check('sort').custom(sortQueryValidator),
+    validateFields,
+  ],
+  getUsersComments
 );
 
 router.post(

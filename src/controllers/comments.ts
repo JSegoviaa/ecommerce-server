@@ -54,6 +54,43 @@ export const getCommentsByProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getUsersComments = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { limit = 20, sort = 'ASC', from = 0 } = req.query;
+
+  try {
+    const text: string = `
+    SELECT 
+    c.id,
+    c.title,
+    c.comment,
+    c.created_at,
+    p.title product_title,
+    p.slug,
+    i.url
+    FROM comments c 
+    INNER JOIN products p ON c.product_id = p.id
+    INNER JOIN images i ON p.image_id = i.id
+    WHERE user_id = $1 ORDER BY c.created_at ${sort} OFFSET $2 LIMIT $3`;
+    const values = [id, from, limit];
+
+    const { rows } = await db.query(text, values);
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'Lista de comentarios del usuario.',
+      usersComments: rows,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de obtener los comentarios del usuario.',
+      error,
+    });
+  }
+};
+
 export const createComment = async (req: Request, res: Response) => {
   const { title, comment, user_id, product_id } = req.body;
   const date = moment().format();
