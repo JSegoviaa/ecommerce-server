@@ -197,8 +197,6 @@ export const createProduct = async (req: Request, res: Response) => {
   const date = moment().format();
   const slug = slugify(title);
   const newSlug = await slugExist(slug, 'products');
-  let variants: ProductVariant[] = [];
-  let productsVariants: ProductsVariants[] = [];
 
   try {
     const text: string = `
@@ -225,69 +223,46 @@ export const createProduct = async (req: Request, res: Response) => {
     const { rows } = await db.query(text, values);
     const productCreated: ProductCreated = rows[0];
 
-    for (let i = 0; i < variant_options.length; i++) {
-      const text: string = `
-      INSERT INTO
-        variant_options(price, grams, mililiters, length, width, height, diameter, variant_size_id, variant_color_id)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
-      RETURNING*`;
+    const variants: ProductVariant[] = await Promise.all(
+      variant_options.map(async (variant) => {
+        const text: string = `
+        INSERT INTO
+          variant_options(price, grams, mililiters, length, width, height, diameter, variant_size_id, variant_color_id)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
+        RETURNING*`;
+        const values = [
+          variant.price,
+          variant.grams,
+          variant.mililiters,
+          variant.length,
+          variant.width,
+          variant.height,
+          variant.diameter,
+          variant.variant_size_id,
+          variant.variant_color_id,
+        ];
+        const { rows } = await db.query(text, values);
 
-      const values = [
-        variant_options[i].price,
-        variant_options[i].grams,
-        variant_options[i].mililiters,
-        variant_options[i].length,
-        variant_options[i].width,
-        variant_options[i].height,
-        variant_options[i].diameter,
-        variant_options[i].variant_size_id,
-        variant_options[i].variant_color_id,
-      ];
+        return rows[0];
+      })
+    );
 
-      const { rows } = await db.query(text, values);
+    const productsVariants: ProductsVariants[] = await Promise.all(
+      variants.map(async (variant) => {
+        const text: string = `INSERT INTO products_variants(product_id, variant_option_id) VALUES($1,$2) RETURNING*`;
+        const values = [productCreated.id, variant.id];
 
-      variants.push(rows[0]);
-    }
-
-    // const variantes: ProductVariant[] = await Promise.all(
-    //   variant_options.map(async (variant) => {
-    //     const text: string = `
-    //     INSERT INTO
-    //       variant_options(price, grams, mililiters, length, width, height, diameter, variant_size_id, variant_color_id)
-    //     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
-    //     RETURNING*`;
-    //     const values = [
-    //       variant.price,
-    //       variant.grams,
-    //       variant.mililiters,
-    //       variant.length,
-    //       variant.width,
-    //       variant.height,
-    //       variant.diameter,
-    //       variant.variant_size_id,
-    //       variant.variant_color_id,
-    //     ];
-    //     const { rows } = await db.query(text, values);
-
-    //     return rows[0];
-    //   })
-    // );
-
-    for (let i = 0; i < variants.length; i++) {
-      const text: string = `INSERT INTO products_variants(product_id, variant_option_id) VALUES($1,$2) RETURNING*`;
-      const values = [productCreated.id, variants[i].id];
-
-      const { rows } = await db.query(text, values);
-
-      productsVariants.push(rows[0]);
-    }
+        const { rows } = await db.query(text, values);
+        return rows[0];
+      })
+    );
 
     return res.status(201).json({
       ok: true,
       msg: 'Se ha creado el producto exitosamente.',
       productCreated,
       variants,
-      // variantes,
+      productsVariants,
     });
   } catch (error) {
     console.log({ error });
