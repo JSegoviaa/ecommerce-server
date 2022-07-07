@@ -8,6 +8,7 @@ export * from './history';
 export * from './products';
 export * from './ratings';
 export * from './subcategories';
+export * from './tags';
 export * from './uploads';
 export * from './users';
 export * from './variants';

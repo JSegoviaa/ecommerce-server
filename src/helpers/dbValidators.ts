@@ -312,3 +312,16 @@ export const favoriteExist = async (id: string) => {
 
   if (favoriteExits) return;
 };
+
+export const tagExist = async (name: string) => {
+  const text: string = 'SELECT * FROM tags WHERE name = $1';
+  const values = [name];
+
+  const tagExits = await db.query(text, values);
+
+  if (tagExits.rows.length === 0) return;
+
+  if (tagExits.rows.length > 0) {
+    throw new Error(`Ya existe una etiqueta con el nombre ${name}.`);
+  }
+};

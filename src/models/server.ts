@@ -11,6 +11,7 @@ import {
   products,
   ratings,
   subcategories,
+  tags,
   uploads,
   users,
   variants,
@@ -30,6 +31,7 @@ class Server {
     products: '/api/products',
     ratings: '/api/ratings',
     subcategories: '/api/subcategories',
+    tags: '/api/tags',
     uploads: '/api/uploads',
     users: '/api/users',
     variants: '/api/variants',
@@ -68,6 +70,7 @@ class Server {
     this.app.use(this.endpoints.products, products);
     this.app.use(this.endpoints.ratings, ratings);
     this.app.use(this.endpoints.subcategories, subcategories);
+    this.app.use(this.endpoints.tags, tags);
     this.app.use(this.endpoints.uploads, uploads);
     this.app.use(this.endpoints.users, users);
     this.app.use(this.endpoints.variants, variants);
