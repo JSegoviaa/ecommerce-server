@@ -9,7 +9,6 @@ import {
   ProductBody,
   Tags,
 } from '../interfaces';
-import { tags } from '../routes';
 
 export const getProducts = async (req: Request, res: Response) => {
   const {
@@ -209,8 +208,6 @@ export const getProductBySlug = async (req: Request, res: Response) => {
     });
   }
 };
-
-export const searchProduct = async (req: Request, res: Response) => {};
 
 export const createProduct = async (req: Request, res: Response) => {
   const {

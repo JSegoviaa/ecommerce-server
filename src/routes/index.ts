@@ -7,6 +7,7 @@ export { default as favorites } from './favorites';
 export { default as history } from './history';
 export { default as products } from './products';
 export { default as ratings } from './ratings';
+export { default as search } from './search';
 export { default as subcategories } from './subcategories';
 export { default as tags } from './tags';
 export { default as uploads } from './upload';

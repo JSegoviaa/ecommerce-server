@@ -64,6 +64,8 @@ type OrderUsersRating = 'id' | 'rating' | 'created_at' | 'title';
 
 type OrderAvgProduct = 'id' | 'title';
 
+type OrderBySearch = 'id' | 'title' | 'created_at';
+
 export const sortQueryValidator = (query: SortQuery) => {
   switch (query) {
     case 'ASC':
@@ -262,6 +264,20 @@ export const productsAvgQueryValidator = (query: OrderAvgProduct) => {
     case 'id':
       return query;
     case 'title':
+      return query;
+
+    default:
+      throw new Error(`${query} no es un parámetro permitido.`);
+  }
+};
+
+export const productsSearch = (query: OrderBySearch) => {
+  switch (query) {
+    case 'id':
+      return query;
+    case 'title':
+      return query;
+    case 'created_at':
       return query;
 
     default:

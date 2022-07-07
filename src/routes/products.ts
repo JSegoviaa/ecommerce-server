@@ -42,6 +42,7 @@ router.get(
   [check('id').custom(productExist), validateFields],
   getProduct
 );
+
 router.get(
   '/find/:slug',
   [

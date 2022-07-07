@@ -7,6 +7,7 @@ export * from './favorites';
 export * from './history';
 export * from './products';
 export * from './ratings';
+export * from './search';
 export * from './subcategories';
 export * from './tags';
 export * from './uploads';
