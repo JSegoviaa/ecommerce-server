@@ -7,7 +7,9 @@ import {
   ProductVariant,
   ProductsVariants,
   ProductBody,
+  Tags,
 } from '../interfaces';
+import { tags } from '../routes';
 
 export const getProducts = async (req: Request, res: Response) => {
   const {
@@ -219,12 +221,12 @@ export const createProduct = async (req: Request, res: Response) => {
     updated_by,
     image_id,
     variant_options,
+    tags,
   }: ProductBody = req.body;
 
   const date = moment().format();
   const slug = slugify(title);
   const newSlug = await slugExist(slug, 'products');
-
   try {
     const text: string = `
     INSERT INTO 
@@ -284,12 +286,23 @@ export const createProduct = async (req: Request, res: Response) => {
       })
     );
 
+    const productTags: Tags[] = await Promise.all(
+      tags.map(async (tag) => {
+        const text: string = `INSERT INTO products_tags(product_id, tag_id) VALUES($1,$2) RETURNING*`;
+        const values = [productCreated.id, tag.id];
+        const { rows } = await db.query(text, values);
+
+        return rows[0];
+      })
+    );
+
     return res.status(201).json({
       ok: true,
       msg: 'Se ha creado el producto exitosamente.',
       productCreated,
       variants,
       productsVariants,
+      productTags,
     });
   } catch (error) {
     console.log({ error });

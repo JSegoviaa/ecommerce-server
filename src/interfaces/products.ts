@@ -40,4 +40,9 @@ export interface ProductBody {
   updated_by: number;
   image_id: string;
   variant_options: ProductVariant[];
+  tags: Tags[];
+}
+
+export interface Tags {
+  id: number;
 }
