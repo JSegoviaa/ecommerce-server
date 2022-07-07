@@ -54,6 +54,12 @@ export const getProducts = async (req: Request, res: Response) => {
 
 export const getProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const {
+    limit = 20,
+    sort = 'ASC',
+    from = 0,
+    order_by = 'created_at',
+  } = req.query;
 
   try {
     const textProduct: string = `
@@ -93,10 +99,14 @@ export const getProduct = async (req: Request, res: Response) => {
     WHERE product_id = $1`;
     const valuesImgs: string[] = [id];
 
-    const [product, variants, images] = await Promise.all([
+    const textComments: string = `SELECT * FROM comments c WHERE c.product_id = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3`;
+    const valuesComments = [id, from, limit];
+
+    const [product, variants, images, comments] = await Promise.all([
       await db.query(textProduct, valuesProduct),
       await db.query(textVariant, valuesVariants),
       await db.query(textImgs, valuesImgs),
+      await db.query(textComments, valuesComments),
     ]);
 
     return res.status(200).json({
@@ -105,6 +115,7 @@ export const getProduct = async (req: Request, res: Response) => {
       product: product.rows[0],
       variants: variants.rows,
       images: images.rows,
+      comments: comments.rows,
     });
   } catch (error) {
     console.log({ error });
@@ -118,6 +129,12 @@ export const getProduct = async (req: Request, res: Response) => {
 
 export const getProductBySlug = async (req: Request, res: Response) => {
   const { slug } = req.params;
+  const {
+    limit = 20,
+    sort = 'ASC',
+    from = 0,
+    order_by = 'created_at',
+  } = req.query;
 
   try {
     const textProduct: string = `
@@ -161,10 +178,17 @@ export const getProductBySlug = async (req: Request, res: Response) => {
     WHERE p.slug = $1`;
     const valuesImgs: string[] = [slug];
 
-    const [product, variants, images] = await Promise.all([
+    const textComments: string = `
+    SELECT c.id, c.title, c.comment, c.user_id, c.created_at FROM comments c 
+    INNER JOIN products p ON c.product_id = p.id
+    WHERE p.slug = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3`;
+    const valuesComments = [slug, from, limit];
+
+    const [product, variants, images, comments] = await Promise.all([
       await db.query(textProduct, valuesProduct),
       await db.query(textVariant, valuesVariants),
       await db.query(textImgs, valuesImgs),
+      await db.query(textComments, valuesComments),
     ]);
 
     return res.status(200).json({
@@ -173,6 +197,7 @@ export const getProductBySlug = async (req: Request, res: Response) => {
       product: product.rows[0],
       variants: variants.rows,
       images: images.rows,
+      comments: comments.rows,
     });
   } catch (error) {
     console.log({ error });
@@ -182,6 +207,8 @@ export const getProductBySlug = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const searchProduct = async (req: Request, res: Response) => {};
 
 export const createProduct = async (req: Request, res: Response) => {
   const {
