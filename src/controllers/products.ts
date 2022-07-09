@@ -61,6 +61,7 @@ export const getProduct = async (req: Request, res: Response) => {
     from = 0,
     order_by = 'created_at',
   } = req.query;
+  let newRate: number = 0;
 
   try {
     const textProduct: string = `
@@ -103,20 +104,51 @@ export const getProduct = async (req: Request, res: Response) => {
     const textComments: string = `SELECT * FROM comments c WHERE c.product_id = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3`;
     const valuesComments = [id, from, limit];
 
-    const [product, variants, images, comments] = await Promise.all([
+    const textRatings: string = `SELECT AVG (rating) FROM ratings WHERE product_id = $1`;
+    const values = [id];
+
+    const [product, variants, images, comments, rating] = await Promise.all([
       await db.query(textProduct, valuesProduct),
       await db.query(textVariant, valuesVariants),
       await db.query(textImgs, valuesImgs),
       await db.query(textComments, valuesComments),
+      await db.query(textRatings, values),
     ]);
+
+    const rate: number = Number(rating.rows[0].avg);
+
+    if (rate <= 0.3) {
+      newRate = 0;
+    } else if (rate > 0.3 && rate <= 0.7) {
+      newRate = 0.5;
+    } else if (rate > 0.7 && rate <= 1.3) {
+      newRate = 1;
+    } else if (rate > 1.3 && rate <= 1.7) {
+      newRate = 1.5;
+    } else if (rate > 1.7 && rate <= 2.3) {
+      newRate = 2;
+    } else if (rate > 2.3 && rate <= 2.7) {
+      newRate = 2.5;
+    } else if (rate > 2.7 && rate <= 3.3) {
+      newRate = 3;
+    } else if (rate > 3.3 && rate <= 3.7) {
+      newRate = 3.5;
+    } else if (rate > 3.7 && rate <= 4.3) {
+      newRate = 4;
+    } else if (rate > 4.3 && rate <= 7.5) {
+      newRate = 4.5;
+    } else newRate = 5;
 
     return res.status(200).json({
       ok: true,
       msg: 'Producto obtenido correctamente.',
-      product: product.rows[0],
-      variants: variants.rows,
-      images: images.rows,
-      comments: comments.rows,
+      fullProduct: {
+        info: product.rows[0],
+        variants: variants.rows,
+        images: images.rows,
+        comments: comments.rows,
+        rating: newRate,
+      },
     });
   } catch (error) {
     console.log({ error });
@@ -136,6 +168,7 @@ export const getProductBySlug = async (req: Request, res: Response) => {
     from = 0,
     order_by = 'created_at',
   } = req.query;
+  let newRate: number = 0;
 
   try {
     const textProduct: string = `
@@ -185,20 +218,55 @@ export const getProductBySlug = async (req: Request, res: Response) => {
     WHERE p.slug = $1 ORDER BY ${order_by} ${sort} OFFSET $2 LIMIT $3`;
     const valuesComments = [slug, from, limit];
 
-    const [product, variants, images, comments] = await Promise.all([
+    const textRating: string = `
+    SELECT AVG (rating) FROM ratings r 
+    INNER JOIN products p ON r.product_id = p.id    
+    WHERE p.slug = $1 
+    `;
+    const valuesRating = [slug];
+
+    const [product, variants, images, comments, rating] = await Promise.all([
       await db.query(textProduct, valuesProduct),
       await db.query(textVariant, valuesVariants),
       await db.query(textImgs, valuesImgs),
       await db.query(textComments, valuesComments),
+      await db.query(textRating, valuesRating),
     ]);
+
+    const rate: number = Number(rating.rows[0].avg);
+
+    if (rate <= 0.3) {
+      newRate = 0;
+    } else if (rate > 0.3 && rate <= 0.7) {
+      newRate = 0.5;
+    } else if (rate > 0.7 && rate <= 1.3) {
+      newRate = 1;
+    } else if (rate > 1.3 && rate <= 1.7) {
+      newRate = 1.5;
+    } else if (rate > 1.7 && rate <= 2.3) {
+      newRate = 2;
+    } else if (rate > 2.3 && rate <= 2.7) {
+      newRate = 2.5;
+    } else if (rate > 2.7 && rate <= 3.3) {
+      newRate = 3;
+    } else if (rate > 3.3 && rate <= 3.7) {
+      newRate = 3.5;
+    } else if (rate > 3.7 && rate <= 4.3) {
+      newRate = 4;
+    } else if (rate > 4.3 && rate <= 7.5) {
+      newRate = 4.5;
+    } else newRate = 5;
 
     return res.status(200).json({
       ok: true,
       msg: 'Producto obtenido correctamente.',
-      product: product.rows[0],
-      variants: variants.rows,
-      images: images.rows,
-      comments: comments.rows,
+      fullProduct: {
+        info: product.rows[0],
+        variants: variants.rows,
+        images: images.rows,
+        comments: comments.rows,
+        rating: newRate,
+      },
     });
   } catch (error) {
     console.log({ error });

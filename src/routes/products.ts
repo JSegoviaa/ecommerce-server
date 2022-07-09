@@ -10,6 +10,7 @@ import {
   deactivateProduct,
 } from '../controllers/';
 import {
+  commentsQueryValidator,
   productExist,
   productQueryValidator,
   slugExists,
@@ -39,7 +40,12 @@ router.get(
 
 router.get(
   '/:id',
-  [check('id').custom(productExist), validateFields],
+  [
+    check('id').custom(productExist),
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(commentsQueryValidator),
+    validateFields,
+  ],
   getProduct
 );
 
@@ -47,6 +53,8 @@ router.get(
   '/find/:slug',
   [
     check('slug').custom((slug) => slugExists(slug, 'products')),
+    check('sort').custom(sortQueryValidator),
+    check('order_by').custom(commentsQueryValidator),
     validateFields,
   ],
   getProductBySlug
