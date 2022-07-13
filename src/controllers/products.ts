@@ -529,7 +529,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-// TODO: validar que exista
 export const deleteVariant = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -542,7 +541,7 @@ export const deleteVariant = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       ok: true,
-      msg: 'La variante se ha eliminado con éxito',
+      msg: 'La variante se ha eliminado con éxito.',
       deletedVariantOption,
     });
   } catch (error) {

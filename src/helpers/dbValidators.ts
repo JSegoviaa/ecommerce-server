@@ -300,6 +300,19 @@ export const variantColorNameExist = async (name: string) => {
   return;
 };
 
+export const variantOptionExist = async (id: string) => {
+  const text: string = `SELECT * FROM variant_options WHERE id = $1`;
+  const values = [id];
+
+  const variantOptionExist = await db.query(text, values);
+
+  if (variantOptionExist.rows.length === 0) {
+    throw new Error(`No existe una opción con el id ${id}`);
+  }
+
+  if (variantOptionExist.rows.length > 0) return;
+};
+
 export const favoriteExist = async (id: string) => {
   const text: string = 'SELECT * FROM favorites WHERE id = $1';
   const values = [id];

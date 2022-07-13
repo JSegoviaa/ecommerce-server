@@ -19,6 +19,7 @@ import {
   userExist,
   variantColorExist,
   variantExist,
+  variantOptionExist,
 } from '../helpers';
 import {
   hasRol,
@@ -198,6 +199,15 @@ router.delete(
   deleteProduct
 );
 
-router.delete('/:id/variant', [], deleteVariant);
+router.delete(
+  '/:id/variant',
+  [
+    validateJWT,
+    hasRol('Super Administrador', 'Administrador', 'Moderador'),
+    check('id').custom(variantOptionExist),
+    validateFields,
+  ],
+  deleteVariant
+);
 
 export default router;
