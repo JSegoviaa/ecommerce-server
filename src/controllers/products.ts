@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import moment from 'moment';
 import { db } from '../db';
-import { slugExist, slugify } from '../helpers';
+import { convertRate, slugExist, slugify } from '../helpers';
 import {
   ProductCreated,
   ProductVariant,
@@ -61,7 +61,6 @@ export const getProduct = async (req: Request, res: Response) => {
     from = 0,
     order_by = 'created_at',
   } = req.query;
-  let newRate: number = 0;
 
   try {
     const textProduct: string = `
@@ -117,27 +116,7 @@ export const getProduct = async (req: Request, res: Response) => {
 
     const rate: number = Number(rating.rows[0].avg);
 
-    if (rate <= 0.3) {
-      newRate = 0;
-    } else if (rate > 0.3 && rate <= 0.7) {
-      newRate = 0.5;
-    } else if (rate > 0.7 && rate <= 1.3) {
-      newRate = 1;
-    } else if (rate > 1.3 && rate <= 1.7) {
-      newRate = 1.5;
-    } else if (rate > 1.7 && rate <= 2.3) {
-      newRate = 2;
-    } else if (rate > 2.3 && rate <= 2.7) {
-      newRate = 2.5;
-    } else if (rate > 2.7 && rate <= 3.3) {
-      newRate = 3;
-    } else if (rate > 3.3 && rate <= 3.7) {
-      newRate = 3.5;
-    } else if (rate > 3.7 && rate <= 4.3) {
-      newRate = 4;
-    } else if (rate > 4.3 && rate <= 7.5) {
-      newRate = 4.5;
-    } else newRate = 5;
+    const newRate = convertRate(rate);
 
     return res.status(200).json({
       ok: true,
@@ -147,7 +126,10 @@ export const getProduct = async (req: Request, res: Response) => {
         variants: variants.rows,
         images: images.rows,
         comments: comments.rows,
-        rating: newRate,
+        rating: {
+          rate: newRate,
+          avg: Number(rating.rows[0].avg),
+        },
       },
     });
   } catch (error) {
@@ -235,27 +217,7 @@ export const getProductBySlug = async (req: Request, res: Response) => {
 
     const rate: number = Number(rating.rows[0].avg);
 
-    if (rate <= 0.3) {
-      newRate = 0;
-    } else if (rate > 0.3 && rate <= 0.7) {
-      newRate = 0.5;
-    } else if (rate > 0.7 && rate <= 1.3) {
-      newRate = 1;
-    } else if (rate > 1.3 && rate <= 1.7) {
-      newRate = 1.5;
-    } else if (rate > 1.7 && rate <= 2.3) {
-      newRate = 2;
-    } else if (rate > 2.3 && rate <= 2.7) {
-      newRate = 2.5;
-    } else if (rate > 2.7 && rate <= 3.3) {
-      newRate = 3;
-    } else if (rate > 3.3 && rate <= 3.7) {
-      newRate = 3.5;
-    } else if (rate > 3.7 && rate <= 4.3) {
-      newRate = 4;
-    } else if (rate > 4.3 && rate <= 7.5) {
-      newRate = 4.5;
-    } else newRate = 5;
+    const newRate = convertRate(rate);
 
     return res.status(200).json({
       ok: true,
@@ -265,7 +227,10 @@ export const getProductBySlug = async (req: Request, res: Response) => {
         variants: variants.rows,
         images: images.rows,
         comments: comments.rows,
-        rating: newRate,
+        rating: {
+          rate: newRate,
+          avg: Number(rating.rows[0].avg),
+        },
       },
     });
   } catch (error) {
