@@ -1,9 +1,18 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { db } from '../db';
+import { ReqUser } from '../interfaces';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: ReqUser;
+    }
+  }
+}
 
 export const validateJWT = async (
-  req: any,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

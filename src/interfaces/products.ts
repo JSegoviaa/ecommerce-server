@@ -41,6 +41,8 @@ export interface ProductBody {
   image_id: string;
   variant_options: ProductVariant[];
   tags: Tags[];
+  is_published?: boolean;
+  is_active?: boolean;
 }
 
 export interface Tags {

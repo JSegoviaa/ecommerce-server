@@ -1,5 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import { ReqUser } from '../interfaces/users';
+import { ReqUser, Role } from '../interfaces/users';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: ReqUser;
+    }
+  }
+}
 
 export const superAdminRol = (
   req: Request,
@@ -39,7 +47,7 @@ export const adminRol = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export const hasRol = (...roles: string[]) => {
+export const hasRol = (...roles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res

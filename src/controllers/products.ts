@@ -381,22 +381,98 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { images } = req.body;
-  let productImages = [];
+  const {
+    title,
+    description,
+    discount,
+    is_published,
+    is_active,
+    image_id,
+    updated_by,
+    variant_options,
+  }: ProductBody = req.body;
+
+  const date = moment().format();
+  const slug = slugify(title);
+  const newSlug = await slugExist(slug, 'products');
 
   try {
-    for (let i = 0; i < images.length; i++) {
-      const textImgs =
-        'INSERT INTO products_images(product_id, image_id) VALUES($1,$2) RETURNING*';
-      const valuesImgs = [id, images[i].id];
-      const { rows } = await db.query(textImgs, valuesImgs);
-      productImages.push(rows[0]);
-    }
+    const text: string = `
+    UPDATE 
+      products 
+    SET
+    title = $1,
+    slug = $2, 
+    description = $3, 
+    discount = $4, 
+    is_published = $5, 
+    is_active = $6, 
+    image_id = $7,
+    updated_by = $8, 
+    updated_at = $9
+    WHERE id = $10
+    RETURNING*
+    `;
+    const values = [
+      title,
+      newSlug,
+      description,
+      discount,
+      is_published,
+      is_active,
+      image_id,
+      updated_by,
+      date,
+      id,
+    ];
+    const { rows } = await db.query(text, values);
+
+    const updatedProduct = rows[0];
+
+    const updatedVariants: ProductVariant[] = await Promise.all(
+      variant_options.map(async (variant) => {
+        const text: string = `
+        UPDATE 
+          variant_options
+        SET
+          price = $1,
+          grams = $2,
+          mililiters = $3,
+          length = $4,
+          width = $5,
+          height = $6,
+          diameter = $7,
+          variant_size_id = $8,
+          variant_color_id = $9
+        WHERE id = $10
+        RETURNING*
+
+        `;
+        const values = [
+          variant.price,
+          variant.grams,
+          variant.mililiters,
+          variant.length,
+          variant.width,
+          variant.height,
+          variant.diameter,
+          variant.variant_size_id,
+          variant.variant_color_id,
+          variant.id,
+        ];
+        const { rows } = await db.query(text, values);
+
+        return rows[0];
+      })
+    );
 
     return res.status(200).json({
       ok: true,
       msg: 'Producto actualizado correctamente',
-      productImages,
+      fullProduct: {
+        updatedProduct,
+        updatedVariants,
+      },
     });
   } catch (error) {
     console.log({ error });
@@ -450,5 +526,31 @@ export const deleteProduct = async (req: Request, res: Response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({ ok: false, msg: 'Error', error });
+  }
+};
+
+// TODO: validar que exista
+export const deleteVariant = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const text: string = `DELETE FROM variant_options WHERE id = $1 RETURNING*`;
+    const values = [id];
+
+    const { rows } = await db.query(text, values);
+
+    const deletedVariantOption = rows[0];
+
+    return res.status(200).json({
+      ok: true,
+      msg: 'La variante se ha eliminado con éxito',
+      deletedVariantOption,
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error en el servidor al momento de eliminar variante.',
+      error,
+    });
   }
 };

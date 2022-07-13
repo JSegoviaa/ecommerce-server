@@ -8,6 +8,7 @@ import {
   deleteProduct,
   getProductBySlug,
   deactivateProduct,
+  deleteVariant,
 } from '../controllers/';
 import {
   commentsQueryValidator,
@@ -69,7 +70,6 @@ router.post(
     check('updated_by').custom(userExist),
     check('variant_options.*.variant_size_id').custom(variantExist),
     check('variant_options.*.variant_color_id').custom(variantColorExist),
-    check('updated_by').custom(userExist),
     check('title', 'El título es obligatorio.').not().isEmpty(),
     check('description', 'La descripción es obligatoria.').not().isEmpty(),
     check('discount', 'El descuento tiene que ser un número.').isFloat(),
@@ -116,7 +116,50 @@ router.post(
 
 router.put(
   '/:id',
-  [check('id').custom(productExist), validateFields],
+  [
+    check('id').custom(productExist),
+    check('updated_by').custom(userExist),
+    check('title', 'El título es obligatorio.').not().isEmpty(),
+    check('description', 'La descripción es obligatoria.').not().isEmpty(),
+    check('discount', 'El descuento tiene que ser un número.').isFloat(),
+    check(
+      'discount',
+      'El descuento no puede ser menor a 0 ni mayor a 100.'
+    ).isFloat({ min: 0, max: 100 }),
+    check('updated_by', 'El id de usuario que lo actualiza es obligatorio.')
+      .not()
+      .isEmpty(),
+    check('image_id', 'El id de la imagen es obligatorio.').not().isEmpty(),
+    check('updated_by', 'El id de usuario que lo actualiza es obligatorio.')
+      .not()
+      .isEmpty(),
+    check('variant_options', 'Se debe de agregar por lo menos una variante.')
+      .not()
+      .isEmpty(),
+    check('variant_options', 'Tiene que ser en forma de arreglo.').isArray(),
+    check('variant_options.*.price', 'El precio es obligatorio.')
+      .not()
+      .isEmpty(),
+    check(
+      'variant_options.*.price',
+      'El precio debe de ser un número mayor a 0.'
+    ).isFloat({ min: 1 }),
+    check('variant_options.*.variant_size_id', 'El tamaño es obligatorio.')
+      .not()
+      .isEmpty(),
+    check(
+      'variant_options.*.variant_size_id',
+      'El id debe de ser un número entero.'
+    ).isInt(),
+    check('variant_options.*.variant_color_id', 'El color es obligatorio.')
+      .not()
+      .isEmpty(),
+    check(
+      'variant_options.*.variant_color_id',
+      'El id debe de ser un número entero.'
+    ).isInt(),
+    validateFields,
+  ],
   updateProduct
 );
 
@@ -154,5 +197,7 @@ router.delete(
   ],
   deleteProduct
 );
+
+router.delete('/:id/variant', [], deleteVariant);
 
 export default router;
